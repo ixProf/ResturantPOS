@@ -1,0 +1,49 @@
+﻿version: "3.9"
+
+services:
+  api:
+    container_name: restaurant-api
+
+    build:
+      context: .
+      dockerfile: POS/Dockerfile
+
+    ports:
+      - "5000:8080"
+
+    depends_on:
+      - sqlserver
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver;
+        Database=RestaurantPOS;
+        User Id=sa;
+        Password=Pass1234;
+        TrustServerCertificate=True;
+        MultipleActiveResultSets=True;
+
+    restart: unless-stopped
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+    container_name: restaurant-db
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "Pass1234"
+
+    ports:
+      - "1433:1433"
+
+    volumes:
+      - sql_data:/var/opt/mssql
+
+    restart: unless-stopped
+
+volumes:
+  sql_data:
