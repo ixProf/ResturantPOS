@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Persistence.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -35,7 +35,7 @@ namespace Infrastructure.Persistence.Migrations
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: true, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()")
                 },
@@ -131,7 +131,7 @@ namespace Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TableNumber = table.Column<int>(type: "int", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<int>(type: "int", maxLength: 20, nullable: false),
                     WaiterId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -153,7 +153,7 @@ namespace Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IngredientId = table.Column<int>(type: "int", nullable: false),
                     ChangeAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    ReasonType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ReasonType = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     ReasonDetail = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     LoggedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()")
                 },
@@ -203,7 +203,7 @@ namespace Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TableId = table.Column<int>(type: "int", nullable: false),
                     WaiterId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -291,8 +291,8 @@ namespace Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(type: "int", nullable: false),
-                    OldStatus = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    NewStatus = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    OldStatus = table.Column<int>(type: "int", maxLength: 30, nullable: false),
+                    NewStatus = table.Column<int>(type: "int", maxLength: 30, nullable: false),
                     ChangedBy = table.Column<int>(type: "int", nullable: true),
                     ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()")
                 },
@@ -324,7 +324,7 @@ namespace Infrastructure.Persistence.Migrations
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     FinalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
                     PaidAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ReceiptNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -354,7 +354,7 @@ namespace Infrastructure.Persistence.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     FromTableId = table.Column<int>(type: "int", nullable: false),
                     ToTableId = table.Column<int>(type: "int", nullable: false),
-                    TransferType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TransferType = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     TransferDetail = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     TransferredBy = table.Column<int>(type: "int", nullable: false),
                     TransferredAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()")
@@ -396,7 +396,7 @@ namespace Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    RefundType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RefundType = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     RefundDetail = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     ApprovedBy = table.Column<int>(type: "int", nullable: false),
                     RefundedAt = table.Column<DateTime>(type: "datetime2", nullable: true)

@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 
 namespace Domain.Models
 {
@@ -12,7 +13,7 @@ namespace Domain.Models
         public decimal TotalAmount { get; set; }
         public decimal? DiscountAmount { get; set; }
         public decimal FinalAmount { get; set; }
-        public string PaymentMethod { get; set; } = null!;
+        public PaymentMethod PaymentMethod { get; set; }
         public DateTime? PaidAt { get; set; }
         public string ReceiptNumber { get; set; } = null!;
 

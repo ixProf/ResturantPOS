@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 namespace Domain.Models;
 
 public class TableTransferLog
@@ -9,7 +10,7 @@ public class TableTransferLog
     public int OrderId { get; set; }
     public int FromTableId { get; set; }
     public int ToTableId { get; set; }
-    public string TransferType { get; set; } = null!;
+    public TransferType TransferType { get; set; }
     public string TransferDetail { get; set; } = null!;
     public int TransferredBy { get; set; }
     public DateTime? TransferredAt { get; set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 
 namespace Domain.Models
 {
@@ -9,7 +10,7 @@ namespace Domain.Models
         public int Id { get; set; }
         public int TableId { get; set; }
         public int WaiterId { get; set; }
-        public string Status { get; set; } = null!;
+        public OrderStatus Status { get; set; }
         public decimal? TotalAmount { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

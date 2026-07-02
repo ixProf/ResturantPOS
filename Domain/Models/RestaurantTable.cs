@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 namespace Domain.Models;
 
 public class RestaurantTable
@@ -8,7 +9,7 @@ public class RestaurantTable
     public int Id { get; set; }
     public int TableNumber { get; set; }
     public int Capacity { get; set; }
-    public string Status { get; set; } = null!;
+    public TableStatus Status { get; set; }
     public int? WaiterId { get; set; }
 
     public  Employee? Waiter { get; set; }

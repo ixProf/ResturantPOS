@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 namespace Domain.Models;
 
 public class Employee
@@ -10,7 +11,7 @@ public class Employee
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
     public string Phone { get; set; } = null!;
-    public string Role { get; set; } = null!;
+    public EmployeeRole Role { get; set; }
     public bool? IsActive { get; set; }
     public DateTime? CreatedAt { get; set; }
 
