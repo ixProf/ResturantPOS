@@ -1,15 +1,15 @@
 # Build Stage
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS build
 
 WORKDIR /src
 
 COPY . .
 
 RUN dotnet restore POS.sln
-RUN dotnet publish POS/POS.csproj -c Release -o /app/publish
+RUN dotnet publish Presentation/Presentation.csproj -c Release -o /app/publish
 
 # Runtime Stage
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview
 
 WORKDIR /app
 
