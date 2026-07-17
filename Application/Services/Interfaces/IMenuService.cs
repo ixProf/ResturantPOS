@@ -12,7 +12,6 @@ public interface IMenuService
     Task<MenuItemDto> UpdateMenuItemAsync(int id, UpdateMenuItemDto dto);
     Task<MenuItemDto> UpdateMenuItemStatusAsync(int id, UpdateMenuItemStatusDto dto);
     Task<bool> DeleteMenuItemAsync(int id);
-
     // Categories
     Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto dto);
     Task<CategoryDto> GetCategoryByIdAsync(int id);

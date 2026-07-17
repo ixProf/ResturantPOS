@@ -1,16 +1,11 @@
-using System;
 using Domain.Enums;
 
-namespace Domain.Models;
+namespace Application.DTOs.Notifications;
 
-public class Notification
+public class CreateNotificationDto
 {
-    public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
-    public bool IsRead { get; set; }
-    public DateTime CreatedAt { get; set; }
     public int? EmployeeId { get; set; }
-    public Employee? Employee { get; set; }
     public EmployeeRole? TargetRole { get; set; }
 }
