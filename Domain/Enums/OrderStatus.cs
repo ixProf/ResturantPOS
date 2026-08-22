@@ -2,9 +2,14 @@ namespace Domain.Enums;
 
 public enum OrderStatus
 {
-    Created,
+    Draft,
+    Submitted,
     Preparing,
     Ready,
     Served,
-    Complete
+    PaymentPending,
+    Completed,
+    Cancelled,
+    Voided
 }
+

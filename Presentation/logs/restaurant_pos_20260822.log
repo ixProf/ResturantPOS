@@ -1,0 +1,583 @@
+2026-08-22 18:18:15.116 +03:00 [WRN] No store type was specified for the decimal property 'QuantityChange' on entity type 'InventoryLog'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:18:15.139 +03:00 [WRN] No store type was specified for the decimal property 'DiscountAmount' on entity type 'Payment'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:18:15.139 +03:00 [WRN] No store type was specified for the decimal property 'FinalAmount' on entity type 'Payment'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:18:15.140 +03:00 [WRN] No store type was specified for the decimal property 'TotalAmount' on entity type 'Payment'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:18:15.330 +03:00 [INF] No migrations were found in assembly 'Infrastructure'. A migration needs to be added before the database can be updated.
+2026-08-22 18:20:27.038 +03:00 [WRN] No store type was specified for the decimal property 'QuantityChange' on entity type 'InventoryLog'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:20:27.064 +03:00 [WRN] No store type was specified for the decimal property 'DiscountAmount' on entity type 'Payment'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:20:27.071 +03:00 [WRN] No store type was specified for the decimal property 'FinalAmount' on entity type 'Payment'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:20:27.079 +03:00 [WRN] No store type was specified for the decimal property 'TotalAmount' on entity type 'Payment'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-08-22 18:20:27.136 +03:00 [INF] No migrations were found in assembly 'Infrastructure'. A migration needs to be added before the database can be updated.
+2026-08-22 18:20:27.822 +03:00 [INF] Executed DbCommand (473ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+CREATE DATABASE [RestaurantPOS];
+2026-08-22 18:20:28.199 +03:00 [INF] Executed DbCommand (357ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+IF SERVERPROPERTY('EngineEdition') <> 5
+BEGIN
+    ALTER DATABASE [RestaurantPOS] SET READ_COMMITTED_SNAPSHOT ON;
+END;
+2026-08-22 18:20:28.281 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-08-22 18:20:28.307 +03:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-08-22 18:20:28.348 +03:00 [INF] Executed DbCommand (36ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-08-22 18:20:28.440 +03:00 [INF] Executed DbCommand (43ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-08-22 18:20:28.483 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-08-22 18:20:28.515 +03:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-08-22 18:20:28.558 +03:00 [INF] Executed DbCommand (34ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-08-22 18:20:28.568 +03:00 [INF] No migrations were applied. The database is already up to date.
+2026-08-22 18:20:28.582 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-08-22 18:23:25.854 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-08-22 18:23:25.907 +03:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-08-22 18:23:25.930 +03:00 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-08-22 18:23:25.988 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-08-22 18:23:25.997 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-08-22 18:23:26.000 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-08-22 18:23:26.026 +03:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-08-22 18:23:26.036 +03:00 [INF] Applying migration '20260822152219_InitialSync'.
+2026-08-22 18:23:26.119 +03:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Categories] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(100) NOT NULL,
+    [Description] nvarchar(max) NULL,
+    [IsActive] bit NULL DEFAULT CAST(1 AS bit),
+    CONSTRAINT [PK_Categories] PRIMARY KEY ([Id])
+);
+2026-08-22 18:23:26.131 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Employees] (
+    [Id] int NOT NULL IDENTITY,
+    [FullName] nvarchar(100) NOT NULL,
+    [Email] nvarchar(255) NOT NULL,
+    [PasswordHash] nvarchar(500) NOT NULL,
+    [Phone] nvarchar(20) NOT NULL,
+    [Role] int NOT NULL,
+    [IsActive] bit NOT NULL DEFAULT CAST(1 AS bit),
+    [CreatedAt] datetime2 NULL DEFAULT (GETDATE()),
+    CONSTRAINT [PK_Employees] PRIMARY KEY ([Id])
+);
+2026-08-22 18:23:26.147 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [FinancialRecords] (
+    [Id] int NOT NULL IDENTITY,
+    [Type] nvarchar(20) NOT NULL,
+    [Amount] decimal(18,2) NOT NULL,
+    [Description] nvarchar(500) NOT NULL,
+    [RecordDate] datetime2 NOT NULL,
+    [CreatedAt] datetime2 NULL DEFAULT (GETDATE()),
+    CONSTRAINT [PK_FinancialRecords] PRIMARY KEY ([Id])
+);
+2026-08-22 18:23:26.153 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Ingredients] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(100) NOT NULL,
+    [TotalStock] decimal(18,2) NOT NULL,
+    [Unit] nvarchar(20) NOT NULL,
+    [LowStockAlert] decimal(18,2) NULL,
+    [RowVersion] rowversion NULL,
+    CONSTRAINT [PK_Ingredients] PRIMARY KEY ([Id])
+);
+2026-08-22 18:23:26.161 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [MenuItems] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(100) NOT NULL,
+    [Price] decimal(18,2) NOT NULL,
+    [CategoryId] int NULL,
+    [IsAvailable] bit NULL DEFAULT CAST(1 AS bit),
+    [IsSeasonalItem] bit NULL DEFAULT CAST(0 AS bit),
+    [CreatedAt] datetime2 NULL DEFAULT (GETDATE()),
+    CONSTRAINT [PK_MenuItems] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_MenuItems_Categories_CategoryId] FOREIGN KEY ([CategoryId]) REFERENCES [Categories] ([Id]) ON DELETE NO ACTION
+);
+2026-08-22 18:23:26.167 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [EmployeeAttendance] (
+    [Id] int NOT NULL IDENTITY,
+    [EmployeeId] int NOT NULL,
+    [CheckIn] datetime2 NOT NULL,
+    [CheckOut] datetime2 NULL,
+    [WorkDate] datetime2 NOT NULL,
+    CONSTRAINT [PK_EmployeeAttendance] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_EmployeeAttendance_Employees_EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [Employees] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.175 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RestaurantTables] (
+    [Id] int NOT NULL IDENTITY,
+    [TableNumber] int NOT NULL,
+    [Capacity] int NOT NULL,
+    [Status] int NOT NULL,
+    [WaiterId] int NULL,
+    [RowVersion] rowversion NULL,
+    CONSTRAINT [PK_RestaurantTables] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_RestaurantTables_Employees_WaiterId] FOREIGN KEY ([WaiterId]) REFERENCES [Employees] ([Id]) ON DELETE SET NULL
+);
+2026-08-22 18:23:26.181 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [InventoryLog] (
+    [Id] int NOT NULL IDENTITY,
+    [IngredientId] int NOT NULL,
+    [ChangeAmount] decimal(18,2) NOT NULL,
+    [QuantityChange] decimal(18,2) NOT NULL,
+    [ReasonType] int NOT NULL,
+    [ReasonDetail] nvarchar(500) NOT NULL,
+    [Reason] nvarchar(max) NOT NULL,
+    [LoggedAt] datetime2 NULL DEFAULT (GETDATE()),
+    [Timestamp] datetime2 NULL,
+    CONSTRAINT [PK_InventoryLog] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_InventoryLog_Ingredients_IngredientId] FOREIGN KEY ([IngredientId]) REFERENCES [Ingredients] ([Id]) ON DELETE NO ACTION
+);
+2026-08-22 18:23:26.186 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [MenuItemIngredients] (
+    [Id] int NOT NULL IDENTITY,
+    [MenuItemId] int NOT NULL,
+    [IngredientId] int NOT NULL,
+    [QuantityUsed] decimal(18,2) NOT NULL,
+    CONSTRAINT [PK_MenuItemIngredients] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_MenuItemIngredients_Ingredients_IngredientId] FOREIGN KEY ([IngredientId]) REFERENCES [Ingredients] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_MenuItemIngredients_MenuItems_MenuItemId] FOREIGN KEY ([MenuItemId]) REFERENCES [MenuItems] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.192 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Orders] (
+    [Id] int NOT NULL IDENTITY,
+    [TableId] int NOT NULL,
+    [WaiterId] int NOT NULL,
+    [Status] int NOT NULL,
+    [TotalAmount] decimal(18,2) NOT NULL,
+    [DiscountAmount] decimal(18,2) NOT NULL,
+    [FinalAmount] decimal(18,2) NOT NULL,
+    [CreatedAt] datetime2 NULL,
+    [UpdatedAt] datetime2 NULL,
+    [CancellationReason] nvarchar(500) NULL,
+    [CancelledBy] int NULL,
+    [CancelledAt] datetime2 NULL,
+    [RowVersion] rowversion NULL,
+    CONSTRAINT [PK_Orders] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Orders_Employees_CancelledBy] FOREIGN KEY ([CancelledBy]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_Orders_Employees_WaiterId] FOREIGN KEY ([WaiterId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_Orders_RestaurantTables_TableId] FOREIGN KEY ([TableId]) REFERENCES [RestaurantTables] ([Id]) ON DELETE NO ACTION
+);
+2026-08-22 18:23:26.199 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Discounts] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [DiscountPercent] decimal(5,2) NULL,
+    [DiscountAmount] decimal(18,2) NULL,
+    [Reason] nvarchar(255) NOT NULL,
+    [ApprovedBy] int NULL,
+    [AppliedAt] datetime2 NULL,
+    [CreatedAt] datetime2 NULL,
+    CONSTRAINT [PK_Discounts] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Discounts_Employees_ApprovedBy] FOREIGN KEY ([ApprovedBy]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_Discounts_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.207 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrderItems] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [MenuItemId] int NOT NULL,
+    [Quantity] int NOT NULL,
+    [UnitPrice] decimal(18,2) NOT NULL,
+    [Status] int NOT NULL,
+    [Notes] nvarchar(500) NULL,
+    [CancellationReason] nvarchar(500) NULL,
+    [CancelledBy] int NULL,
+    [CancelledAt] datetime2 NULL,
+    CONSTRAINT [PK_OrderItems] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_OrderItems_Employees_CancelledBy] FOREIGN KEY ([CancelledBy]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrderItems_MenuItems_MenuItemId] FOREIGN KEY ([MenuItemId]) REFERENCES [MenuItems] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrderItems_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.216 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrderStatusHistory] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [OldStatus] int NOT NULL,
+    [NewStatus] int NOT NULL,
+    [ChangedBy] int NULL,
+    [ChangedAt] datetime2 NULL DEFAULT (GETDATE()),
+    [Notes] nvarchar(max) NULL,
+    CONSTRAINT [PK_OrderStatusHistory] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_OrderStatusHistory_Employees_ChangedBy] FOREIGN KEY ([ChangedBy]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrderStatusHistory_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.223 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Payments] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [CashierId] int NOT NULL,
+    [TotalAmount] decimal(18,2) NOT NULL,
+    [DiscountAmount] decimal(18,2) NULL,
+    [FinalAmount] decimal(18,2) NOT NULL,
+    [PaymentMethod] int NOT NULL,
+    [PaidAt] datetime2 NULL,
+    [ReceiptNumber] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_Payments] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Payments_Employees_CashierId] FOREIGN KEY ([CashierId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_Payments_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.230 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableTransferLog] (
+    [Id] int NOT NULL IDENTITY,
+    [OrderId] int NOT NULL,
+    [FromTableId] int NOT NULL,
+    [ToTableId] int NOT NULL,
+    [TransferType] int NOT NULL,
+    [TransferDetail] nvarchar(500) NOT NULL,
+    [Reason] nvarchar(max) NOT NULL,
+    [TransferredBy] int NOT NULL,
+    [TransferredAt] datetime2 NULL DEFAULT (GETDATE()),
+    CONSTRAINT [PK_TableTransferLog] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_TableTransferLog_Employees_TransferredBy] FOREIGN KEY ([TransferredBy]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TableTransferLog_Orders_OrderId] FOREIGN KEY ([OrderId]) REFERENCES [Orders] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableTransferLog_RestaurantTables_FromTableId] FOREIGN KEY ([FromTableId]) REFERENCES [RestaurantTables] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TableTransferLog_RestaurantTables_ToTableId] FOREIGN KEY ([ToTableId]) REFERENCES [RestaurantTables] ([Id]) ON DELETE NO ACTION
+);
+2026-08-22 18:23:26.236 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Refunds] (
+    [Id] int NOT NULL IDENTITY,
+    [PaymentId] int NOT NULL,
+    [Amount] decimal(18,2) NOT NULL,
+    [RefundType] int NOT NULL,
+    [RefundDetail] nvarchar(500) NOT NULL,
+    [ApprovedBy] int NOT NULL,
+    [RefundedAt] datetime2 NULL,
+    CONSTRAINT [PK_Refunds] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Refunds_Employees_ApprovedBy] FOREIGN KEY ([ApprovedBy]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_Refunds_Payments_PaymentId] FOREIGN KEY ([PaymentId]) REFERENCES [Payments] ([Id]) ON DELETE CASCADE
+);
+2026-08-22 18:23:26.245 +03:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Categories_Name] ON [Categories] ([Name]);
+2026-08-22 18:23:26.249 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Discounts_ApprovedBy] ON [Discounts] ([ApprovedBy]);
+2026-08-22 18:23:26.253 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Discounts_OrderId] ON [Discounts] ([OrderId]);
+2026-08-22 18:23:26.257 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_EmployeeAttendance_EmployeeId] ON [EmployeeAttendance] ([EmployeeId]);
+2026-08-22 18:23:26.262 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_EmployeeAttendance_EmployeeId_WorkDate] ON [EmployeeAttendance] ([EmployeeId], [WorkDate]);
+2026-08-22 18:23:26.266 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Employees_Email] ON [Employees] ([Email]);
+2026-08-22 18:23:26.270 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_FinancialRecords_RecordDate] ON [FinancialRecords] ([RecordDate]);
+2026-08-22 18:23:26.275 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_FinancialRecords_Type] ON [FinancialRecords] ([Type]);
+2026-08-22 18:23:26.278 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Ingredients_Name] ON [Ingredients] ([Name]);
+2026-08-22 18:23:26.283 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_InventoryLog_IngredientId] ON [InventoryLog] ([IngredientId]);
+2026-08-22 18:23:26.286 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_InventoryLog_LoggedAt] ON [InventoryLog] ([LoggedAt]);
+2026-08-22 18:23:26.301 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_InventoryLog_ReasonType] ON [InventoryLog] ([ReasonType]);
+2026-08-22 18:23:26.305 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_MenuItemIngredients_IngredientId] ON [MenuItemIngredients] ([IngredientId]);
+2026-08-22 18:23:26.308 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_MenuItemIngredients_MenuItemId] ON [MenuItemIngredients] ([MenuItemId]);
+2026-08-22 18:23:26.313 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_MenuItemIngredients_MenuItemId_IngredientId] ON [MenuItemIngredients] ([MenuItemId], [IngredientId]);
+2026-08-22 18:23:26.317 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_MenuItems_CategoryId] ON [MenuItems] ([CategoryId]);
+2026-08-22 18:23:26.322 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderItems_CancelledBy] ON [OrderItems] ([CancelledBy]);
+2026-08-22 18:23:26.325 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderItems_MenuItemId] ON [OrderItems] ([MenuItemId]);
+2026-08-22 18:23:26.330 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderItems_OrderId] ON [OrderItems] ([OrderId]);
+2026-08-22 18:23:26.334 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Orders_CancelledBy] ON [Orders] ([CancelledBy]);
+2026-08-22 18:23:26.338 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Orders_CreatedAt] ON [Orders] ([CreatedAt]);
+2026-08-22 18:23:26.343 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Orders_Status] ON [Orders] ([Status]);
+2026-08-22 18:23:26.348 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Orders_TableId] ON [Orders] ([TableId]);
+2026-08-22 18:23:26.351 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Orders_WaiterId] ON [Orders] ([WaiterId]);
+2026-08-22 18:23:26.355 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderStatusHistory_ChangedAt] ON [OrderStatusHistory] ([ChangedAt]);
+2026-08-22 18:23:26.359 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderStatusHistory_ChangedBy] ON [OrderStatusHistory] ([ChangedBy]);
+2026-08-22 18:23:26.363 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrderStatusHistory_OrderId] ON [OrderStatusHistory] ([OrderId]);
+2026-08-22 18:23:26.368 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Payments_CashierId] ON [Payments] ([CashierId]);
+2026-08-22 18:23:26.372 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Payments_OrderId] ON [Payments] ([OrderId]);
+2026-08-22 18:23:26.376 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Refunds_ApprovedBy] ON [Refunds] ([ApprovedBy]);
+2026-08-22 18:23:26.380 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Refunds_PaymentId] ON [Refunds] ([PaymentId]);
+2026-08-22 18:23:26.384 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_RestaurantTables_TableNumber] ON [RestaurantTables] ([TableNumber]);
+2026-08-22 18:23:26.389 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_RestaurantTables_WaiterId] ON [RestaurantTables] ([WaiterId]);
+2026-08-22 18:23:26.392 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableTransferLog_FromTableId] ON [TableTransferLog] ([FromTableId]);
+2026-08-22 18:23:26.396 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableTransferLog_OrderId] ON [TableTransferLog] ([OrderId]);
+2026-08-22 18:23:26.399 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableTransferLog_ToTableId] ON [TableTransferLog] ([ToTableId]);
+2026-08-22 18:23:26.403 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableTransferLog_TransferredBy] ON [TableTransferLog] ([TransferredBy]);
+2026-08-22 18:23:26.415 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260822152219_InitialSync', N'9.0.8');
+2026-08-22 18:23:26.425 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-08-22 18:30:04.100 +03:00 [INF] User profile is available. Using 'C:\Users\mahmo\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-08-22 18:30:04.582 +03:00 [INF] Now listening on: http://localhost:5279
+2026-08-22 18:30:04.583 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-08-22 18:30:04.584 +03:00 [INF] Hosting environment: Development
+2026-08-22 18:30:04.585 +03:00 [INF] Content root path: C:\Users\mahmo\ResturantPOS\Presentation
+2026-08-22 18:30:10.281 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/ - null null
+2026-08-22 18:30:10.302 +03:00 [WRN] Failed to determine the https port for redirect.
+2026-08-22 18:30:13.022 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/ - 404 0 null 2743.0684ms
+2026-08-22 18:30:13.032 +03:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5279/, Response status code: 404
+2026-08-22 18:30:16.437 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger - null null
+2026-08-22 18:30:16.445 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger - 301 0 null 8.4209ms
+2026-08-22 18:30:16.449 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/index.html - null null
+2026-08-22 18:30:16.512 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/index.html - 200 null text/html;charset=utf-8 62.4358ms
+2026-08-22 18:30:16.542 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/swagger-ui.css - null null
+2026-08-22 18:30:16.543 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/index.css - null null
+2026-08-22 18:30:16.543 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/swagger-ui-bundle.js - null null
+2026-08-22 18:30:16.543 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/index.js - null null
+2026-08-22 18:30:16.543 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/swagger-ui-standalone-preset.js - null null
+2026-08-22 18:30:16.551 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/index.js - 200 null application/javascript;charset=utf-8 7.4316ms
+2026-08-22 18:30:16.552 +03:00 [INF] Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2026-08-22 18:30:16.555 +03:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-08-22 18:30:16.557 +03:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-08-22 18:30:16.557 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/index.css - 200 202 text/css 14.2872ms
+2026-08-22 18:30:16.559 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/swagger-ui.css - 200 152034 text/css 16.7271ms
+2026-08-22 18:30:16.559 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/swagger-ui-standalone-preset.js - 200 230293 text/javascript 15.9459ms
+2026-08-22 18:30:16.575 +03:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-08-22 18:30:16.576 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/swagger-ui-bundle.js - 200 1452753 text/javascript 33.2984ms
+2026-08-22 18:30:16.671 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/v1/swagger.json - null null
+2026-08-22 18:30:16.685 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/swagger/favicon-32x32.png - null null
+2026-08-22 18:30:16.687 +03:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-08-22 18:30:16.689 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/favicon-32x32.png - 200 628 image/png 3.2684ms
+2026-08-22 18:30:16.813 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 142.183ms
+2026-08-22 18:31:07.962 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Auth/register - application/json 153
+2026-08-22 18:31:07.964 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:31:07.971 +03:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Manager)
+2026-08-22 18:31:07.974 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-08-22 18:31:07.977 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Auth/register - 401 0 null 14.6358ms
+2026-08-22 18:32:59.974 +03:00 [INF] User profile is available. Using 'C:\Users\mahmo\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-08-22 18:33:00.046 +03:00 [INF] Now listening on: http://localhost:5279
+2026-08-22 18:33:00.047 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-08-22 18:33:00.048 +03:00 [INF] Hosting environment: Development
+2026-08-22 18:33:00.049 +03:00 [INF] Content root path: C:\Users\mahmo\ResturantPOS\Presentation
+2026-08-22 18:33:05.643 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Auth/register - application/json 153
+2026-08-22 18:33:05.674 +03:00 [WRN] Failed to determine the https port for redirect.
+2026-08-22 18:33:05.675 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:33:05.689 +03:00 [INF] Executing endpoint 'Presentation.Controllers.AuthController.Register (Presentation)'
+2026-08-22 18:33:05.700 +03:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Register(Application.DTOs.Authentication.RegisterDto) on controller Presentation.Controllers.AuthController (Presentation).
+2026-08-22 18:33:06.900 +03:00 [INF] Executed DbCommand (39ms) [Parameters=[@__dto_Email_0='?' (Size = 255)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Employees] AS [e]
+        WHERE [e].[Email] = @__dto_Email_0) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-08-22 18:33:07.036 +03:00 [INF] Executed DbCommand (7ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (Size = 255), @p2='?' (Size = 100), @p3='?' (Size = 500), @p4='?' (Size = 20), @p5='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Employees] ([CreatedAt], [Email], [FullName], [PasswordHash], [Phone], [Role])
+OUTPUT INSERTED.[Id], INSERTED.[IsActive]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5);
+2026-08-22 18:33:07.434 +03:00 [INF] Executing OkObjectResult, writing value of type 'Application.DTOs.Authentication.AuthResponseDto'.
+2026-08-22 18:33:07.448 +03:00 [INF] Executed action Presentation.Controllers.AuthController.Register (Presentation) in 1744.9603ms
+2026-08-22 18:33:07.451 +03:00 [INF] Executed endpoint 'Presentation.Controllers.AuthController.Register (Presentation)'
+2026-08-22 18:33:07.458 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Auth/register - 200 null application/json; charset=utf-8 1817.0342ms
+2026-08-22 18:37:22.366 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Auth/login - application/json 67
+2026-08-22 18:37:22.369 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:37:22.371 +03:00 [INF] Executing endpoint 'Presentation.Controllers.AuthController.Login (Presentation)'
+2026-08-22 18:37:22.376 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Application.DTOs.Authentication.LoginDto) on controller Presentation.Controllers.AuthController (Presentation).
+2026-08-22 18:37:22.484 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[@__dto_Email_0='?' (Size = 255)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [e].[Id], [e].[CreatedAt], [e].[Email], [e].[FullName], [e].[IsActive], [e].[PasswordHash], [e].[Phone], [e].[Role]
+FROM [Employees] AS [e]
+WHERE [e].[Email] = @__dto_Email_0
+2026-08-22 18:37:22.491 +03:00 [INF] Executing OkObjectResult, writing value of type 'Application.DTOs.Authentication.AuthResponseDto'.
+2026-08-22 18:37:22.493 +03:00 [INF] Executed action Presentation.Controllers.AuthController.Login (Presentation) in 115.4558ms
+2026-08-22 18:37:22.494 +03:00 [INF] Executed endpoint 'Presentation.Controllers.AuthController.Login (Presentation)'
+2026-08-22 18:37:22.495 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Auth/login - 200 null application/json; charset=utf-8 128.7865ms
+2026-08-22 18:40:33.356 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Categories - application/json 102
+2026-08-22 18:40:33.358 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:40:33.364 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Manager)
+2026-08-22 18:40:33.367 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-08-22 18:40:33.367 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Categories - 401 0 null 10.6508ms
+2026-08-22 18:40:54.250 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Auth/login - application/json 67
+2026-08-22 18:40:54.252 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:40:54.252 +03:00 [INF] Executing endpoint 'Presentation.Controllers.AuthController.Login (Presentation)'
+2026-08-22 18:40:54.253 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Application.DTOs.Authentication.LoginDto) on controller Presentation.Controllers.AuthController (Presentation).
+2026-08-22 18:40:54.276 +03:00 [INF] Executed DbCommand (8ms) [Parameters=[@__dto_Email_0='?' (Size = 255)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [e].[Id], [e].[CreatedAt], [e].[Email], [e].[FullName], [e].[IsActive], [e].[PasswordHash], [e].[Phone], [e].[Role]
+FROM [Employees] AS [e]
+WHERE [e].[Email] = @__dto_Email_0
+2026-08-22 18:40:54.278 +03:00 [INF] Executing OkObjectResult, writing value of type 'Application.DTOs.Authentication.AuthResponseDto'.
+2026-08-22 18:40:54.279 +03:00 [INF] Executed action Presentation.Controllers.AuthController.Login (Presentation) in 25.3601ms
+2026-08-22 18:40:54.280 +03:00 [INF] Executed endpoint 'Presentation.Controllers.AuthController.Login (Presentation)'
+2026-08-22 18:40:54.280 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Auth/login - 200 null application/json; charset=utf-8 29.8882ms
+2026-08-22 18:41:09.491 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Categories - application/json 102
+2026-08-22 18:41:09.493 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:41:09.494 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Manager)
+2026-08-22 18:41:09.496 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-08-22 18:41:09.498 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Categories - 401 0 null 6.2909ms
+2026-08-22 18:43:13.887 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Categories - application/json 102
+2026-08-22 18:43:13.888 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:43:13.939 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: 'xvK4w-GkxHt5N-vXov5EB_TJ9dUwu-liDY5vTVSG2c4'. , KeyId: \r\n'.
+Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'.
+Exceptions caught:
+ '[PII of type 'System.Text.StringBuilder' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-08-22 18:43:13.946 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: 'xvK4w-GkxHt5N-vXov5EB_TJ9dUwu-liDY5vTVSG2c4'. , KeyId: \r\n'.
+Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'.
+Exceptions caught:
+ '[PII of type 'System.Text.StringBuilder' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-08-22 18:43:13.950 +03:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Manager)
+2026-08-22 18:43:13.953 +03:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-08-22 18:43:13.954 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Categories - 401 0 null 67.1171ms
+2026-08-22 18:43:21.730 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Auth/login - application/json 67
+2026-08-22 18:43:21.732 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:43:21.732 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenSignatureKeyNotFoundException: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: 'xvK4w-GkxHt5N-vXov5EB_TJ9dUwu-liDY5vTVSG2c4'. , KeyId: \r\n'.
+Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'.
+Exceptions caught:
+ '[PII of type 'System.Text.StringBuilder' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignature(JsonWebToken jwtToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateSignatureAndIssuerSecurityKey(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-08-22 18:43:21.736 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10517: Signature validation failed. The token's kid is missing. Keys tried: 'Microsoft.IdentityModel.Tokens.SymmetricSecurityKey, KeyId: '', InternalId: 'xvK4w-GkxHt5N-vXov5EB_TJ9dUwu-liDY5vTVSG2c4'. , KeyId: \r\n'.
+Number of keys in TokenValidationParameters: '1'. 
+Number of keys in Configuration: '0'.
+Exceptions caught:
+ '[PII of type 'System.Text.StringBuilder' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+token: '[PII of type 'Microsoft.IdentityModel.JsonWebTokens.JsonWebToken' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'. See https://aka.ms/IDX10503 for details.
+2026-08-22 18:43:21.736 +03:00 [INF] Executing endpoint 'Presentation.Controllers.AuthController.Login (Presentation)'
+2026-08-22 18:43:21.738 +03:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Application.DTOs.Authentication.LoginDto) on controller Presentation.Controllers.AuthController (Presentation).
+2026-08-22 18:43:21.755 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[@__dto_Email_0='?' (Size = 255)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [e].[Id], [e].[CreatedAt], [e].[Email], [e].[FullName], [e].[IsActive], [e].[PasswordHash], [e].[Phone], [e].[Role]
+FROM [Employees] AS [e]
+WHERE [e].[Email] = @__dto_Email_0
+2026-08-22 18:43:21.761 +03:00 [INF] Executing OkObjectResult, writing value of type 'Application.DTOs.Authentication.AuthResponseDto'.
+2026-08-22 18:43:21.763 +03:00 [INF] Executed action Presentation.Controllers.AuthController.Login (Presentation) in 23.8768ms
+2026-08-22 18:43:21.766 +03:00 [INF] Executed endpoint 'Presentation.Controllers.AuthController.Login (Presentation)'
+2026-08-22 18:43:21.768 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Auth/login - 200 null application/json; charset=utf-8 37.8462ms
+2026-08-22 18:43:47.014 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Categories - application/json 102
+2026-08-22 18:43:47.016 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:43:47.025 +03:00 [INF] Executing endpoint 'Presentation.Controllers.CategoriesController.CreateCategory (Presentation)'
+2026-08-22 18:43:47.027 +03:00 [INF] Route matched with {action = "CreateCategory", controller = "Categories"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateCategory(Application.DTOs.Menu.Categories.CreateCategoryDto) on controller Presentation.Controllers.CategoriesController (Presentation).
+2026-08-22 18:43:47.059 +03:00 [INF] Executed DbCommand (11ms) [Parameters=[@p0='?' (Size = 4000), @p1='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Categories] ([Description], [Name])
+OUTPUT INSERTED.[Id], INSERTED.[IsActive]
+VALUES (@p0, @p1);
+2026-08-22 18:43:47.064 +03:00 [INF] Executing CreatedAtActionResult, writing value of type 'Application.DTOs.Menu.Categories.CategoryDto'.
+2026-08-22 18:43:47.074 +03:00 [INF] Executed action Presentation.Controllers.CategoriesController.CreateCategory (Presentation) in 45.9123ms
+2026-08-22 18:43:47.074 +03:00 [INF] Executed endpoint 'Presentation.Controllers.CategoriesController.CreateCategory (Presentation)'
+2026-08-22 18:43:47.075 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Categories - 201 null application/json; charset=utf-8 60.8362ms
+2026-08-22 18:43:55.114 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/api/Categories - null null
+2026-08-22 18:43:55.117 +03:00 [INF] Executing endpoint 'Presentation.Controllers.CategoriesController.GetAllCategories (Presentation)'
+2026-08-22 18:43:55.119 +03:00 [INF] Route matched with {action = "GetAllCategories", controller = "Categories"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllCategories() on controller Presentation.Controllers.CategoriesController (Presentation).
+2026-08-22 18:43:55.129 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[Description], [c].[IsActive], [c].[Name]
+FROM [Categories] AS [c]
+2026-08-22 18:43:55.133 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+ListSelectIterator`2[[Domain.Models.Category, Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Application.DTOs.Menu.Categories.CategoryDto, Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-08-22 18:43:55.137 +03:00 [INF] Executed action Presentation.Controllers.CategoriesController.GetAllCategories (Presentation) in 16.6213ms
+2026-08-22 18:43:55.138 +03:00 [INF] Executed endpoint 'Presentation.Controllers.CategoriesController.GetAllCategories (Presentation)'
+2026-08-22 18:43:55.139 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/api/Categories - 200 null application/json; charset=utf-8 24.6354ms
+2026-08-22 18:47:00.457 +03:00 [INF] Request starting HTTP/1.1 POST http://localhost:5279/api/Inventory/ingredients - application/json 128
+2026-08-22 18:47:00.461 +03:00 [INF] CORS policy execution successful.
+2026-08-22 18:47:00.463 +03:00 [INF] Executing endpoint 'Presentation.Controllers.InventoryController.CreateIngredient (Presentation)'
+2026-08-22 18:47:00.466 +03:00 [INF] Route matched with {action = "CreateIngredient", controller = "Inventory"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateIngredient(Application.DTOs.Inventory.CreateIngredientDto) on controller Presentation.Controllers.InventoryController (Presentation).
+2026-08-22 18:47:00.538 +03:00 [INF] Executed DbCommand (35ms) [Parameters=[@p0='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p1='?' (Size = 100), @p2='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p3='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Ingredients] ([LowStockAlert], [Name], [TotalStock], [Unit])
+OUTPUT INSERTED.[Id], INSERTED.[RowVersion]
+VALUES (@p0, @p1, @p2, @p3);
+2026-08-22 18:47:00.544 +03:00 [INF] Executing CreatedAtActionResult, writing value of type 'Application.DTOs.Inventory.IngredientDto'.
+2026-08-22 18:47:00.551 +03:00 [INF] Executed action Presentation.Controllers.InventoryController.CreateIngredient (Presentation) in 83.5181ms
+2026-08-22 18:47:00.552 +03:00 [INF] Executed endpoint 'Presentation.Controllers.InventoryController.CreateIngredient (Presentation)'
+2026-08-22 18:47:00.552 +03:00 [INF] Request finished HTTP/1.1 POST http://localhost:5279/api/Inventory/ingredients - 201 null application/json; charset=utf-8 94.754ms
+2026-08-22 18:47:07.440 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/api/Inventory/ingredients - null null
+2026-08-22 18:47:07.442 +03:00 [INF] Executing endpoint 'Presentation.Controllers.InventoryController.GetAllIngredients (Presentation)'
+2026-08-22 18:47:07.445 +03:00 [INF] Route matched with {action = "GetAllIngredients", controller = "Inventory"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllIngredients() on controller Presentation.Controllers.InventoryController (Presentation).
+2026-08-22 18:47:07.455 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [i].[Id], [i].[LowStockAlert], [i].[Name], [i].[RowVersion], [i].[TotalStock], [i].[Unit]
+FROM [Ingredients] AS [i]
+2026-08-22 18:47:07.458 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+ListSelectIterator`2[[Domain.Models.Ingredient, Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Application.DTOs.Inventory.IngredientDto, Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-08-22 18:47:07.459 +03:00 [INF] Executed action Presentation.Controllers.InventoryController.GetAllIngredients (Presentation) in 12.5215ms
+2026-08-22 18:47:07.460 +03:00 [INF] Executed endpoint 'Presentation.Controllers.InventoryController.GetAllIngredients (Presentation)'
+2026-08-22 18:47:07.461 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/api/Inventory/ingredients - 200 null application/json; charset=utf-8 21.3849ms
+2026-08-22 18:47:27.741 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/api/Inventory/alerts/low-stock - null null
+2026-08-22 18:47:27.743 +03:00 [INF] Executing endpoint 'Presentation.Controllers.InventoryController.GetLowStockAlerts (Presentation)'
+2026-08-22 18:47:27.747 +03:00 [INF] Route matched with {action = "GetLowStockAlerts", controller = "Inventory"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetLowStockAlerts() on controller Presentation.Controllers.InventoryController (Presentation).
+2026-08-22 18:47:27.778 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [i].[Id], [i].[LowStockAlert], [i].[Name], [i].[RowVersion], [i].[TotalStock], [i].[Unit]
+FROM [Ingredients] AS [i]
+WHERE [i].[LowStockAlert] IS NOT NULL AND [i].[TotalStock] <= [i].[LowStockAlert]
+2026-08-22 18:47:27.781 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+ListSelectIterator`2[[Domain.Models.Ingredient, Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Application.DTOs.Inventory.LowStockDto, Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-08-22 18:47:27.783 +03:00 [INF] Executed action Presentation.Controllers.InventoryController.GetLowStockAlerts (Presentation) in 33.9378ms
+2026-08-22 18:47:27.784 +03:00 [INF] Executed endpoint 'Presentation.Controllers.InventoryController.GetLowStockAlerts (Presentation)'
+2026-08-22 18:47:27.786 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/api/Inventory/alerts/low-stock - 200 null application/json; charset=utf-8 45.0255ms
+2026-08-22 18:48:30.552 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:5279/api/Inventory/overview - null null
+2026-08-22 18:48:30.553 +03:00 [INF] Executing endpoint 'Presentation.Controllers.InventoryController.GetInventoryOverview (Presentation)'
+2026-08-22 18:48:30.556 +03:00 [INF] Route matched with {action = "GetInventoryOverview", controller = "Inventory"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetInventoryOverview() on controller Presentation.Controllers.InventoryController (Presentation).
+2026-08-22 18:48:30.561 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [i].[Id], [i].[LowStockAlert], [i].[Name], [i].[RowVersion], [i].[TotalStock], [i].[Unit]
+FROM [Ingredients] AS [i]
+2026-08-22 18:48:30.563 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Linq.Enumerable+ListSelectIterator`2[[Domain.Models.Ingredient, Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Application.DTOs.Inventory.InventoryItemDto, Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-08-22 18:48:30.566 +03:00 [INF] Executed action Presentation.Controllers.InventoryController.GetInventoryOverview (Presentation) in 9.6969ms
+2026-08-22 18:48:30.567 +03:00 [INF] Executed endpoint 'Presentation.Controllers.InventoryController.GetInventoryOverview (Presentation)'
+2026-08-22 18:48:30.568 +03:00 [INF] Request finished HTTP/1.1 GET http://localhost:5279/api/Inventory/overview - 200 null application/json; charset=utf-8 16.0965ms
+2026-08-22 18:51:24.504 +03:00 [INF] Application is shutting down...

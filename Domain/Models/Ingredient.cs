@@ -11,6 +11,10 @@ public class Ingredient
     public string Unit { get; set; } = null!;
     public decimal? LowStockAlert { get; set; }
 
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
+
+
     public virtual ICollection<MenuItemIngredient> MenuItemIngredients { get; set; } = new List<MenuItemIngredient>();
     public virtual ICollection<InventoryLog> InventoryLogs { get; set; } = new List<InventoryLog>();
 }

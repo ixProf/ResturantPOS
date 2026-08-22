@@ -20,9 +20,9 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .IsRequired()
             .HasMaxLength(255);
 
-        builder.Property(x => x.Password)
+        builder.Property(x => x.PasswordHash)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(500);
 
         builder.Property(x => x.Phone)
             .HasMaxLength(20);
@@ -40,6 +40,16 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasMany(x => x.Orders)
             .WithOne(x => x.Waiter)
             .HasForeignKey(x => x.WaiterId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.CancelledOrders)
+            .WithOne(x => x.CancelledByEmployee)
+            .HasForeignKey(x => x.CancelledBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.CancelledOrderItems)
+            .WithOne(x => x.CancelledByEmployee)
+            .HasForeignKey(x => x.CancelledBy)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.Payments)
@@ -79,4 +89,4 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasIndex(x => x.Email)
             .IsUnique();
     }
-}
+}

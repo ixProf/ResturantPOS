@@ -12,6 +12,10 @@ public class RestaurantTable
     public TableStatus Status { get; set; }
     public int? WaiterId { get; set; }
 
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
+
+
     public  Employee? Waiter { get; set; }
     public  ICollection<Order> Orders { get; set; } = new List<Order>();
     public ICollection<TableTransferLog> IncomingTransfers { get; set; }

@@ -27,6 +27,10 @@ public class IngredientConfiguration : IEntityTypeConfiguration<Ingredient>
             .IsRequired()
             .HasMaxLength(20);
 
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
+
+
         builder.HasMany(x => x.MenuItemIngredients)
             .WithOne(x => x.Ingredient)
             .HasForeignKey(x => x.IngredientId)

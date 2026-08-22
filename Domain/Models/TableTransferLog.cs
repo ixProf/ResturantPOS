@@ -12,6 +12,7 @@ public class TableTransferLog
     public int ToTableId { get; set; }
     public TransferType TransferType { get; set; }
     public string TransferDetail { get; set; } = null!;
+    public string Reason { get => TransferDetail; set => TransferDetail = value; }
     public int TransferredBy { get; set; }
     public DateTime? TransferredAt { get; set; }
 
@@ -19,4 +20,4 @@ public class TableTransferLog
     public virtual RestaurantTable FromTable { get; set; } = null!;
     public virtual Employee TransferredByEmployee { get; set; } = null!;
     public virtual Order Order { get; set; } = null!;
-}
+}

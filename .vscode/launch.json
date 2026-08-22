@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch RestaurantPOS Web API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Presentation/bin/Debug/net9.0/Presentation.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Presentation",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openUrl",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
+    ]
+}

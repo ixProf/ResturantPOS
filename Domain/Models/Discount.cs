@@ -12,7 +12,8 @@ public class Discount
     public string Reason { get; set; } = null!;
     public int? ApprovedBy { get; set; }
     public DateTime? AppliedAt { get; set; }
+    public DateTime? CreatedAt { get => AppliedAt; set => AppliedAt = value; }
 
     public Employee? ApprovedByEmployee { get; set; }
-    public  Order Order { get; set; } = null!;
-}
+    public Order Order { get; set; } = null!;
+}

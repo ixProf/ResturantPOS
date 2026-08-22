@@ -10,18 +10,30 @@ namespace Domain.Models
         public int Id { get; set; }
         public int TableId { get; set; }
         public int WaiterId { get; set; }
-        public OrderStatus Status { get; set; }
-        public decimal? TotalAmount { get; set; }
+        public OrderStatus Status { get; set; } = OrderStatus.Draft;
+        public decimal TotalAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal FinalAmount { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public string? CancellationReason { get; set; }
+        public int? CancelledBy { get; set; }
+        public DateTime? CancelledAt { get; set; }
+
+        [Timestamp]
+        public byte[]? RowVersion { get; set; }
+
+
         public virtual RestaurantTable Table { get; set; } = null!;
         public virtual Employee Waiter { get; set; } = null!;
+        public virtual Employee? CancelledByEmployee { get; set; }
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-        public virtual ICollection<Discount> Discounts { get; set; } = new List<Discount>();        public virtual ICollection<TableTransferLog> TableTransferLog { get; set; } = new List<TableTransferLog>();
-
+        public virtual ICollection<Discount> Discounts { get; set; } = new List<Discount>();
+        public virtual ICollection<TableTransferLog> TableTransferLog { get; set; } = new List<TableTransferLog>();
         public virtual ICollection<OrderStatusHistory> OrderStatusHistories { get; set; } =
             new List<OrderStatusHistory>();
     }
 }
+

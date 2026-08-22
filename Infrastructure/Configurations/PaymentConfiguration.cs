@@ -12,6 +12,10 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.DiscountAmount).HasPrecision(18, 2);
+        builder.Property(x => x.FinalAmount).HasPrecision(18, 2);
+        builder.Property(x => x.TotalAmount).HasPrecision(18, 2);
+
         builder.HasOne(x => x.Cashier)
             .WithMany(x => x.Payments)
             .HasForeignKey(x => x.CashierId);
@@ -19,5 +23,6 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasOne(x => x.Order)
             .WithMany(x => x.Payments)
             .HasForeignKey(x => x.OrderId);
+
     }
 }

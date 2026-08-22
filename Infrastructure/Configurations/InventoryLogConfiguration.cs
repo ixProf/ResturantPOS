@@ -16,6 +16,10 @@ public class InventoryLogConfiguration : IEntityTypeConfiguration<InventoryLog>
             .HasPrecision(18, 2)
             .IsRequired();
 
+        builder.Property(x => x.QuantityChange)
+            .HasPrecision(18, 2);
+
+
         builder.Property(x => x.ReasonType)
             .IsRequired()
             .HasMaxLength(50);

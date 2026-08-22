@@ -12,7 +12,8 @@ public class OrderStatusHistory
     public OrderStatus NewStatus { get; set; }
     public int? ChangedBy { get; set; }
     public DateTime? ChangedAt { get; set; }
+    public string? Notes { get; set; }
 
     public virtual Order Order { get; set; } = null!;
     public virtual Employee? ChangedByEmployee { get; set; }
-}
+}

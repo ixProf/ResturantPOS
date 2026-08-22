@@ -2,7 +2,7 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Data.Configurations;
+namespace Infrastructure.Persistence.Configurations;
 
 public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
@@ -21,13 +21,24 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.TotalAmount)
                .HasColumnType("decimal(18,2)");
 
+        builder.Property(o => o.DiscountAmount)
+               .HasColumnType("decimal(18,2)");
+
+        builder.Property(o => o.FinalAmount)
+               .HasColumnType("decimal(18,2)");
+
+        builder.Property(o => o.CancellationReason)
+               .HasMaxLength(500);
+
         builder.Property(o => o.CreatedAt);
 
         builder.Property(o => o.UpdatedAt);
 
-        // Relationships
+        builder.Property(o => o.RowVersion)
+               .IsRowVersion();
 
         builder.HasOne(o => o.Table)
+
                .WithMany(t => t.Orders)
                .HasForeignKey(o => o.TableId)
                .OnDelete(DeleteBehavior.Restrict);
@@ -35,6 +46,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasOne(o => o.Waiter)
                .WithMany(e => e.Orders)
                .HasForeignKey(o => o.WaiterId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(o => o.CancelledByEmployee)
+               .WithMany(e => e.CancelledOrders)
+               .HasForeignKey(o => o.CancelledBy)
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(o => o.OrderItems)
@@ -62,7 +78,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
                .HasForeignKey(h => h.OrderId)
                .OnDelete(DeleteBehavior.Cascade);
 
-        //
         builder.HasIndex(o => o.TableId);
 
         builder.HasIndex(o => o.WaiterId);
@@ -71,4 +86,4 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.HasIndex(o => o.CreatedAt);
     }
-}
+}

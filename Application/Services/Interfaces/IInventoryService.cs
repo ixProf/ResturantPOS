@@ -15,4 +15,9 @@ public interface IInventoryService
     Task<StockTransactionDto> AdjustStockAsync(StockAdjustmentDto dto);
     Task<IEnumerable<LowStockDto>> GetLowStockAlertsAsync();
     Task<IEnumerable<InventoryItemDto>> GetInventoryOverviewAsync();
+
+    // Order Recipe & Deduction Integration
+    Task<bool> CheckRecipeAvailabilityAsync(int menuItemId, int quantity);
+    Task<bool> DeductInventoryForOrderAsync(int orderId);
+    Task<bool> RestoreInventoryForOrderAsync(int orderId);
 }

@@ -2,6 +2,8 @@ namespace Domain.Enums;
 
 public enum RefundType
 {
+    Full,
+    Partial,
     WrongOrder,
     BadQuality,
     OrderCancelled,
@@ -9,3 +11,4 @@ public enum RefundType
     CustomerComplaint,
     Other
 }
+

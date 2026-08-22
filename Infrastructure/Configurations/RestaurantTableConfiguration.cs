@@ -22,6 +22,10 @@ public class RestaurantTableConfiguration : IEntityTypeConfiguration<RestaurantT
             .IsRequired()
             .HasMaxLength(20);
 
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
+
+
         builder.HasOne(x => x.Waiter)
             .WithMany(x => x.RestaurantTables)
             .HasForeignKey(x => x.WaiterId)

@@ -19,7 +19,13 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             .HasPrecision(18, 2)
             .IsRequired();
 
+        builder.Property(x => x.Status)
+            .IsRequired();
+
         builder.Property(x => x.Notes)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.CancellationReason)
             .HasMaxLength(500);
 
         builder.HasOne(x => x.Order)
@@ -32,8 +38,13 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             .HasForeignKey(x => x.MenuItemId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(x => x.CancelledByEmployee)
+            .WithMany(e => e.CancelledOrderItems)
+            .HasForeignKey(x => x.CancelledBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(x => x.OrderId);
 
         builder.HasIndex(x => x.MenuItemId);
     }
-}
+}
