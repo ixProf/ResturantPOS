@@ -6,5 +6,6 @@ public enum InventoryReasonType
     Restock,
     Waste,
     Spoilage,
-    Adjustment
+    Adjustment,
+    Purchase
 }

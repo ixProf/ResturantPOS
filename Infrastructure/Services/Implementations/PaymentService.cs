@@ -16,11 +16,13 @@ public class PaymentService : IPaymentService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IInventoryService _inventoryService;
+    private readonly IOrderNotificationService _notificationService;
 
-    public PaymentService(IUnitOfWork unitOfWork, IInventoryService inventoryService)
+    public PaymentService(IUnitOfWork unitOfWork, IInventoryService inventoryService, IOrderNotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _inventoryService = inventoryService;
+        _notificationService = notificationService;
     }
 
     public async Task<PaymentDto> ProcessPaymentAsync(CreatePaymentDto dto, int cashierId)
@@ -89,7 +91,19 @@ public class PaymentService : IPaymentService
                 Notes = $"Payment processed via {dto.PaymentMethod}."
             });
 
+            await _unitOfWork.FinancialRecords.AddAsync(new FinancialRecord
+            {
+                Type = FinancialRecordType.Income,
+                Amount = order.FinalAmount,
+                Description = $"Payment for Order #{order.Id} via {dto.PaymentMethod} ({payment.ReceiptNumber})",
+                RecordDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            });
+
             await _unitOfWork.CommitTransactionAsync();
+
+            _ = _notificationService.NotifySalesUpdatedAsync(order.Id, payment.Id, payment.FinalAmount);
+
             return MapToPaymentDto(payment);
         }
         catch
@@ -224,6 +238,15 @@ public class PaymentService : IPaymentService
 
             await _unitOfWork.Refunds.AddAsync(refund);
 
+            await _unitOfWork.FinancialRecords.AddAsync(new FinancialRecord
+            {
+                Type = FinancialRecordType.Expense,
+                Amount = dto.Amount,
+                Description = $"Refund for Order #{payment.OrderId} ({dto.RefundType}: {dto.RefundDetail ?? "Refund issued"})",
+                RecordDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            });
+
             if (dto.RefundType == RefundType.Full)
             {
                 await _inventoryService.RestoreInventoryForOrderAsync(payment.OrderId);
@@ -251,6 +274,12 @@ public class PaymentService : IPaymentService
         var approver = await _unitOfWork.Employees.GetByIdAsync(approvedByEmployeeId);
         if (approver == null)
             throw new KeyNotFoundException($"Approving employee '{approvedByEmployeeId}' not found.");
+
+        if (dto.DiscountAmount < 0)
+            throw new ArgumentException("Discount amount cannot be negative.");
+
+        if (dto.DiscountAmount > order.TotalAmount)
+            throw new InvalidOperationException("Discount amount cannot exceed the total order amount.");
 
         order.DiscountAmount = dto.DiscountAmount;
         order.FinalAmount = Math.Max(0, order.TotalAmount - dto.DiscountAmount);

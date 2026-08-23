@@ -22,6 +22,7 @@ public class OrderServiceTests
     private readonly Mock<IRepository<Employee>> _mockEmployeeRepo;
     private readonly Mock<IRepository<MenuItem>> _mockMenuItemRepo;
     private readonly Mock<IInventoryService> _mockInventoryService;
+    private readonly Mock<IOrderNotificationService> _mockNotificationService;
     private readonly Mock<IDisposable> _mockTransaction;
     private readonly OrderService _service;
 
@@ -33,6 +34,7 @@ public class OrderServiceTests
         _mockEmployeeRepo = new Mock<IRepository<Employee>>();
         _mockMenuItemRepo = new Mock<IRepository<MenuItem>>();
         _mockInventoryService = new Mock<IInventoryService>();
+        _mockNotificationService = new Mock<IOrderNotificationService>();
         _mockTransaction = new Mock<IDisposable>();
 
         _mockUnitOfWork.Setup(u => u.Orders).Returns(_mockOrderRepo.Object);
@@ -41,7 +43,7 @@ public class OrderServiceTests
         _mockUnitOfWork.Setup(u => u.MenuItems).Returns(_mockMenuItemRepo.Object);
         _mockUnitOfWork.Setup(u => u.BeginTransactionAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_mockTransaction.Object);
 
-        _service = new OrderService(_mockUnitOfWork.Object, _mockInventoryService.Object);
+        _service = new OrderService(_mockUnitOfWork.Object, _mockInventoryService.Object, _mockNotificationService.Object);
     }
 
     [Fact]

@@ -78,4 +78,58 @@ public class InventoryServiceTests
         await act.Should().ThrowAsync<KeyNotFoundException>()
             .WithMessage("*99*");
     }
+
+    [Fact]
+    public async Task CreateInventoryPurchaseAsync_ValidPurchase_IncreasesStockAndCreatesExpense()
+    {
+        var mockEmployeeRepo = new Mock<IRepository<Employee>>();
+        var mockPurchaseRepo = new Mock<IRepository<InventoryPurchase>>();
+        var mockFinancialRepo = new Mock<IRepository<FinancialRecord>>();
+
+        _mockUnitOfWork.Setup(u => u.Employees).Returns(mockEmployeeRepo.Object);
+        _mockUnitOfWork.Setup(u => u.InventoryPurchases).Returns(mockPurchaseRepo.Object);
+        _mockUnitOfWork.Setup(u => u.FinancialRecords).Returns(mockFinancialRepo.Object);
+
+        var ingredient = new Ingredient { Id = 1, Name = "Chicken", TotalStock = 30.0m, Unit = "kg" };
+        var employee = new Employee { Id = 10, FullName = "John Manager", Role = EmployeeRole.InventoryManager };
+
+        _mockIngredientRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(ingredient);
+        mockEmployeeRepo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(employee);
+
+        var dto = new CreateInventoryPurchaseDto
+        {
+            IngredientId = 1,
+            Quantity = 20.0m,
+            UnitCost = 100.0m,
+            Reason = "Chicken Purchase"
+        };
+
+        var result = await _service.CreateInventoryPurchaseAsync(dto, 10);
+
+        result.Should().NotBeNull();
+        result.TotalAmount.Should().Be(2000.0m);
+        ingredient.TotalStock.Should().Be(50.0m);
+
+        mockPurchaseRepo.Verify(r => r.AddAsync(It.Is<InventoryPurchase>(p => p.TotalAmount == 2000.0m && p.IngredientId == 1)), Times.Once);
+        mockFinancialRepo.Verify(r => r.AddAsync(It.Is<FinancialRecord>(f => f.Type == FinancialRecordType.Expense && f.Amount == 2000.0m)), Times.Once);
+        _mockLogRepo.Verify(r => r.AddAsync(It.Is<InventoryLog>(l => l.ReasonType == InventoryReasonType.Purchase && l.QuantityChange == 20.0m)), Times.Once);
+        _mockUnitOfWork.Verify(u => u.CommitTransactionAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateInventoryPurchaseAsync_InvalidQuantity_ThrowsArgumentException()
+    {
+        var dto = new CreateInventoryPurchaseDto
+        {
+            IngredientId = 1,
+            Quantity = -5.0m,
+            UnitCost = 100.0m,
+            Reason = "Invalid Purchase"
+        };
+
+        Func<Task> act = async () => await _service.CreateInventoryPurchaseAsync(dto, 10);
+
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("*Quantity*");
+    }
 }

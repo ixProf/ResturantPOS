@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+using Domain.Models;
 using Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +27,7 @@ public class AppDbContext : DbContext
     public DbSet<RestaurantTable> RestaurantTables => Set<RestaurantTable>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<InventoryLog> InventoryLogs => Set<InventoryLog>();
+    public DbSet<InventoryPurchase> InventoryPurchases => Set<InventoryPurchase>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

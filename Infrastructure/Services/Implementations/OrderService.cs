@@ -15,11 +15,13 @@ public class OrderService : IOrderService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IInventoryService _inventoryService;
+    private readonly IOrderNotificationService _notificationService;
 
-    public OrderService(IUnitOfWork unitOfWork, IInventoryService inventoryService)
+    public OrderService(IUnitOfWork unitOfWork, IInventoryService inventoryService, IOrderNotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _inventoryService = inventoryService;
+        _notificationService = notificationService;
     }
 
     public async Task<OrderResponseDto> CreateOrderAsync(CreateOrderDto dto, int waiterId)
@@ -87,6 +89,8 @@ public class OrderService : IOrderService
             });
 
             await _unitOfWork.CommitTransactionAsync();
+
+            _ = _notificationService.NotifyOrderUpdatedAsync(order.Id, "Created");
 
             return MapToOrderResponseDto(order);
         }
@@ -210,6 +214,8 @@ public class OrderService : IOrderService
             _unitOfWork.Orders.Update(order);
             await _unitOfWork.CommitTransactionAsync();
 
+            _ = _notificationService.NotifyOrderUpdatedAsync(order.Id, "Submitted");
+
             return MapToOrderResponseDto(order);
         }
         catch
@@ -277,6 +283,15 @@ public class OrderService : IOrderService
             _unitOfWork.Orders.Update(order);
             await _unitOfWork.CommitTransactionAsync();
 
+            if (dto.Status == OrderStatus.Ready)
+            {
+                _ = _notificationService.NotifyOrderReadyForWaiterAsync(order.Id, order.TableId, order.Table?.TableNumber ?? 0);
+            }
+            else
+            {
+                _ = _notificationService.NotifyOrderUpdatedAsync(order.Id, dto.Status.ToString());
+            }
+
             return MapToOrderResponseDto(order);
         }
         catch
@@ -336,6 +351,16 @@ public class OrderService : IOrderService
 
         _unitOfWork.Orders.Update(order);
         await _unitOfWork.SaveChangesAsync();
+
+        if (order.Status == OrderStatus.Ready)
+        {
+            _ = _notificationService.NotifyOrderReadyForWaiterAsync(orderId, order.TableId, order.Table?.TableNumber ?? 0);
+        }
+        else
+        {
+            _ = _notificationService.NotifyOrderUpdatedAsync(orderId, "ItemStatusUpdated");
+        }
+
         return MapToOrderResponseDto(order);
     }
 
@@ -508,9 +533,46 @@ public class OrderService : IOrderService
 
     private static void ValidateStatusTransition(OrderStatus current, OrderStatus target)
     {
+        if (current == target) return;
+
         if (current == OrderStatus.Completed || current == OrderStatus.Cancelled || current == OrderStatus.Voided)
         {
             throw new InvalidOperationException($"Cannot transition from final state '{current}'.");
+        }
+
+        bool isValid = (current, target) switch
+        {
+            (OrderStatus.Draft, OrderStatus.Submitted) => true,
+            (OrderStatus.Draft, OrderStatus.Cancelled) => true,
+            (OrderStatus.Draft, OrderStatus.Voided) => true,
+
+            (OrderStatus.Submitted, OrderStatus.Preparing) => true,
+            (OrderStatus.Submitted, OrderStatus.Ready) => true,
+            (OrderStatus.Submitted, OrderStatus.Cancelled) => true,
+            (OrderStatus.Submitted, OrderStatus.Voided) => true,
+
+            (OrderStatus.Preparing, OrderStatus.Ready) => true,
+            (OrderStatus.Preparing, OrderStatus.Cancelled) => true,
+            (OrderStatus.Preparing, OrderStatus.Voided) => true,
+
+            (OrderStatus.Ready, OrderStatus.Served) => true,
+            (OrderStatus.Ready, OrderStatus.PaymentPending) => true,
+            (OrderStatus.Ready, OrderStatus.Cancelled) => true,
+            (OrderStatus.Ready, OrderStatus.Voided) => true,
+
+            (OrderStatus.Served, OrderStatus.PaymentPending) => true,
+            (OrderStatus.Served, OrderStatus.Completed) => true,
+            (OrderStatus.Served, OrderStatus.Voided) => true,
+
+            (OrderStatus.PaymentPending, OrderStatus.Completed) => true,
+            (OrderStatus.PaymentPending, OrderStatus.Voided) => true,
+
+            _ => false
+        };
+
+        if (!isValid)
+        {
+            throw new InvalidOperationException($"Invalid order status transition from '{current}' to '{target}'.");
         }
     }
 

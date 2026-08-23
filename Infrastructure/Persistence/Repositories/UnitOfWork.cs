@@ -29,6 +29,8 @@ public class UnitOfWork : IUnitOfWork
         MenuItemIngredients = new Repository<MenuItemIngredient>(_context);
         TableTransferLogs = new Repository<TableTransferLog>(_context);
         Notifications = new Repository<Notification>(_context);
+        FinancialRecords = new Repository<FinancialRecord>(_context);
+        InventoryPurchases = new Repository<InventoryPurchase>(_context);
     }
 
     public IRepository<Order> Orders { get; }
@@ -45,6 +47,8 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<MenuItemIngredient> MenuItemIngredients { get; }
     public IRepository<TableTransferLog> TableTransferLogs { get; }
     public IRepository<Notification> Notifications { get; }
+    public IRepository<FinancialRecord> FinancialRecords { get; }
+    public IRepository<InventoryPurchase> InventoryPurchases { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

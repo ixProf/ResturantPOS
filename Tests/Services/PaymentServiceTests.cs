@@ -21,6 +21,7 @@ public class PaymentServiceTests
     private readonly Mock<IRepository<Employee>> _mockEmployeeRepo;
     private readonly Mock<IRepository<Discount>> _mockDiscountRepo;
     private readonly Mock<IInventoryService> _mockInventoryService;
+    private readonly Mock<IOrderNotificationService> _mockNotificationService;
     private readonly Mock<IDisposable> _mockTransaction;
     private readonly PaymentService _service;
 
@@ -32,6 +33,7 @@ public class PaymentServiceTests
         _mockEmployeeRepo = new Mock<IRepository<Employee>>();
         _mockDiscountRepo = new Mock<IRepository<Discount>>();
         _mockInventoryService = new Mock<IInventoryService>();
+        _mockNotificationService = new Mock<IOrderNotificationService>();
         _mockTransaction = new Mock<IDisposable>();
 
         _mockUnitOfWork.Setup(u => u.Orders).Returns(_mockOrderRepo.Object);
@@ -40,7 +42,7 @@ public class PaymentServiceTests
         _mockUnitOfWork.Setup(u => u.Discounts).Returns(_mockDiscountRepo.Object);
         _mockUnitOfWork.Setup(u => u.BeginTransactionAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_mockTransaction.Object);
 
-        _service = new PaymentService(_mockUnitOfWork.Object, _mockInventoryService.Object);
+        _service = new PaymentService(_mockUnitOfWork.Object, _mockInventoryService.Object, _mockNotificationService.Object);
     }
 
     [Fact]

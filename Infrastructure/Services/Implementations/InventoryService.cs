@@ -14,10 +14,12 @@ namespace Infrastructure.Services.Implementations;
 public class InventoryService : IInventoryService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrderNotificationService? _notificationService;
 
-    public InventoryService(IUnitOfWork unitOfWork)
+    public InventoryService(IUnitOfWork unitOfWork, IOrderNotificationService? notificationService = null)
     {
         _unitOfWork = unitOfWork;
+        _notificationService = notificationService;
     }
 
     public async Task<IngredientDto> CreateIngredientAsync(CreateIngredientDto dto)
@@ -119,6 +121,123 @@ public class InventoryService : IInventoryService
             await _unitOfWork.RollbackTransactionAsync();
             throw;
         }
+    }
+
+    public async Task<InventoryPurchaseResponseDto> CreateInventoryPurchaseAsync(CreateInventoryPurchaseDto dto, int createdById)
+    {
+        if (dto.IngredientId <= 0)
+            throw new ArgumentException("Invalid ingredient ID.");
+
+        if (dto.Quantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero.");
+
+        if (dto.UnitCost < 0)
+            throw new ArgumentException("Unit cost cannot be negative.");
+
+        if (string.IsNullOrWhiteSpace(dto.Reason))
+            throw new ArgumentException("Reason/description is required.");
+
+        decimal totalAmount = Math.Round(dto.Quantity * dto.UnitCost, 2);
+        if (totalAmount <= 0)
+            throw new InvalidOperationException("Total purchase amount must be greater than zero.");
+
+        using var transaction = await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var ingredient = await _unitOfWork.Ingredients.GetByIdAsync(dto.IngredientId);
+            if (ingredient == null)
+                throw new KeyNotFoundException($"Ingredient with ID '{dto.IngredientId}' was not found.");
+
+            var creator = await _unitOfWork.Employees.GetByIdAsync(createdById);
+            if (creator == null)
+                throw new KeyNotFoundException($"Employee with ID '{createdById}' was not found.");
+
+            // Step 1: Increase inventory stock
+            ingredient.TotalStock += dto.Quantity;
+            _unitOfWork.Ingredients.Update(ingredient);
+
+            // Step 2: Create InventoryPurchase record
+            var purchase = new InventoryPurchase
+            {
+                IngredientId = dto.IngredientId,
+                Quantity = dto.Quantity,
+                UnitCost = dto.UnitCost,
+                TotalAmount = totalAmount,
+                Reason = dto.Reason.Trim(),
+                PurchaseDate = DateTime.UtcNow,
+                CreatedById = createdById
+            };
+            await _unitOfWork.InventoryPurchases.AddAsync(purchase);
+
+            // Step 3: Create InventoryLog (ReasonType = Purchase)
+            await _unitOfWork.InventoryLogs.AddAsync(new InventoryLog
+            {
+                IngredientId = dto.IngredientId,
+                QuantityChange = dto.Quantity,
+                ReasonType = InventoryReasonType.Purchase,
+                Reason = $"Inventory Purchase: {dto.Reason.Trim()} (+{dto.Quantity} {ingredient.Unit} @ {dto.UnitCost} EGP/unit)",
+                Timestamp = DateTime.UtcNow
+            });
+
+            // Step 4: Create FinancialRecord (Expense)
+            await _unitOfWork.FinancialRecords.AddAsync(new FinancialRecord
+            {
+                Type = FinancialRecordType.Expense,
+                Amount = totalAmount,
+                Description = $"Inventory Purchase: {dto.Quantity} {ingredient.Unit} of {ingredient.Name} ({dto.Reason.Trim()})",
+                RecordDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            });
+
+            await _unitOfWork.CommitTransactionAsync();
+
+            if (_notificationService != null)
+            {
+                _ = _notificationService.NotifySalesUpdatedAsync(0, purchase.Id, totalAmount);
+            }
+
+            return new InventoryPurchaseResponseDto
+            {
+                Id = purchase.Id,
+                IngredientId = ingredient.Id,
+                IngredientName = ingredient.Name,
+                Quantity = purchase.Quantity,
+                UnitCost = purchase.UnitCost,
+                TotalAmount = purchase.TotalAmount,
+                Reason = purchase.Reason,
+                PurchaseDate = purchase.PurchaseDate,
+                CreatedById = creator.Id,
+                CreatedByName = creator.FullName
+            };
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<InventoryPurchaseResponseDto>> GetInventoryPurchasesAsync()
+    {
+        var purchases = await _unitOfWork.InventoryPurchases.Query()
+            .Include(p => p.Ingredient)
+            .Include(p => p.CreatedBy)
+            .OrderByDescending(p => p.PurchaseDate)
+            .ToListAsync();
+
+        return purchases.Select(p => new InventoryPurchaseResponseDto
+        {
+            Id = p.Id,
+            IngredientId = p.IngredientId,
+            IngredientName = p.Ingredient?.Name ?? "Unknown",
+            Quantity = p.Quantity,
+            UnitCost = p.UnitCost,
+            TotalAmount = p.TotalAmount,
+            Reason = p.Reason,
+            PurchaseDate = p.PurchaseDate,
+            CreatedById = p.CreatedById,
+            CreatedByName = p.CreatedBy?.FullName ?? "Unknown"
+        });
     }
 
     public async Task<IEnumerable<LowStockDto>> GetLowStockAlertsAsync()

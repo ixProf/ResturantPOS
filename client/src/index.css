@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+:root {
+  /* Default: Dark mode tokens */
+  --bg-color: #0E0F11;
+  --fg-color: #EEEEEE;
+  --card-bg: #151619;
+  --popover-bg: #1C1D21;
+  --sidebar-bg: #111215;
+  --glass-card-bg: #1F1F29;
+  --glass-border-color: #2A2A35;
+  --primary-color: #5E6AD2;
+  --secondary-bg: #1F2024;
+  --muted-fg: #8A8F98;
+  --destructive-color: #E05252;
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --brand-nebula: #a78bfa;
+  --brand-cosmos: #8b5cf6;
+  --brand-stardust: #7c3aed;
+}
+
+html.light {
+  /* Light mode tokens */
+  --bg-color: oklch(0.985 0.005 250);
+  --fg-color: oklch(0.19 0.045 265);
+  --card-bg: #FFFFFF;
+  --popover-bg: oklch(0.97 0.005 250);
+  --sidebar-bg: oklch(0.96 0.015 250);
+  --glass-card-bg: oklch(0.96 0.015 250);
+  --glass-border-color: oklch(0.9 0.015 260);
+  --primary-color: oklch(0.55 0.22 263);
+  --secondary-bg: oklch(0.95 0.015 260);
+  --muted-fg: oklch(0.45 0.02 260);
+  --destructive-color: oklch(0.55 0.2 25);
+  --border-color: oklch(0.9 0.015 260);
+}
+
+@theme {
+  --color-app-bg: var(--bg-color);
+  --color-app-fg: var(--fg-color);
+  --color-app-card: var(--card-bg);
+  --color-app-popover: var(--popover-bg);
+  --color-app-sidebar: var(--sidebar-bg);
+  --color-app-glass: var(--glass-card-bg);
+  --color-app-glass-border: var(--glass-border-color);
+  --color-app-primary: var(--primary-color);
+  --color-app-secondary: var(--secondary-bg);
+  --color-app-muted: var(--muted-fg);
+  --color-app-destructive: var(--destructive-color);
+  --color-app-border: var(--border-color);
+  --color-brand-nebula: var(--brand-nebula);
+  --color-brand-cosmos: var(--brand-cosmos);
+  --color-brand-stardust: var(--brand-stardust);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Gradient brand accent - ONLY for logo / main brand CTA */
+.brand-gradient {
+  background: linear-gradient(135deg, var(--brand-nebula) 0%, var(--brand-cosmos) 50%, var(--brand-stardust) 100%);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(135deg, var(--brand-nebula) 0%, var(--brand-cosmos) 50%, var(--brand-stardust) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

@@ -13,7 +13,6 @@ public class OrderStatusHistoryConfiguration : IEntityTypeConfiguration<OrderSta
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.OldStatus)
-            .IsRequired()
             .HasMaxLength(30);
 
         builder.Property(x => x.NewStatus)

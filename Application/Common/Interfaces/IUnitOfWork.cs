@@ -21,6 +21,8 @@ public interface IUnitOfWork
     IRepository<MenuItemIngredient> MenuItemIngredients { get; }
     IRepository<TableTransferLog> TableTransferLogs { get; }
     IRepository<Notification> Notifications { get; }
+    IRepository<FinancialRecord> FinancialRecords { get; }
+    IRepository<InventoryPurchase> InventoryPurchases { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDisposable> BeginTransactionAsync(CancellationToken cancellationToken = default);

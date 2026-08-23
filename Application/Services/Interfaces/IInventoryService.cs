@@ -11,8 +11,10 @@ public interface IInventoryService
     Task<IngredientDto> UpdateIngredientAsync(int id, UpdateIngredientDto dto);
     Task<bool> DeleteIngredientAsync(int id);
 
-    // Stock Management
+    // Stock Management & Purchases
     Task<StockTransactionDto> AdjustStockAsync(StockAdjustmentDto dto);
+    Task<InventoryPurchaseResponseDto> CreateInventoryPurchaseAsync(CreateInventoryPurchaseDto dto, int createdById);
+    Task<IEnumerable<InventoryPurchaseResponseDto>> GetInventoryPurchasesAsync();
     Task<IEnumerable<LowStockDto>> GetLowStockAlertsAsync();
     Task<IEnumerable<InventoryItemDto>> GetInventoryOverviewAsync();
 
