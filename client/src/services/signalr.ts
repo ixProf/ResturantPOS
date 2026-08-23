@@ -9,9 +9,15 @@ class SignalRService {
     }
 
     const token = localStorage.getItem('alaris_token');
+    const envUrl = import.meta.env.VITE_API_URL;
+    let hubUrl = '/hubs/order';
+    if (envUrl) {
+      const base = envUrl.replace(/\/api\/?$/, '');
+      hubUrl = `${base}/hubs/order`;
+    }
 
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/order', {
+      .withUrl(hubUrl, {
         accessTokenFactory: () => token || '',
         skipNegotiation: false,
         transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,

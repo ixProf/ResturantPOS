@@ -159,6 +159,9 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant POS API v1");
 });
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
@@ -167,6 +170,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<OrderHub>("/hubs/order");
+app.MapFallbackToFile("index.html");
 
 using (var scope = app.Services.CreateScope())
 {
