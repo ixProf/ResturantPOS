@@ -48,6 +48,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<Application.Common.Interfaces.IOrderNotificationService, Presentation.Services.OrderNotificationService>();
+builder.Services.AddScoped<Application.Common.Interfaces.IDatabaseSeeder, Infrastructure.Persistence.DatabaseSeeder>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<Application.Validation.LoginDtoValidator>();
 
@@ -166,5 +167,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<OrderHub>("/hubs/order");
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<Application.Common.Interfaces.IDatabaseSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.Run();
