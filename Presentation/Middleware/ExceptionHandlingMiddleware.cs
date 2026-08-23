@@ -67,6 +67,20 @@ public class ExceptionHandlingMiddleware
                 message = "The entity you were trying to update was modified by another user. Please reload and try again.";
                 break;
 
+            case DbUpdateException dbUpdateEx:
+                statusCode = (int)HttpStatusCode.InternalServerError;
+                title = "Database Update Error";
+                _logger.LogError(dbUpdateEx, "DbUpdateException occurred: {Message}. InnerException: {InnerMessage}", dbUpdateEx.Message, dbUpdateEx.InnerException?.Message);
+                if (_env.IsDevelopment())
+                {
+                    message = dbUpdateEx.InnerException?.Message ?? dbUpdateEx.Message;
+                }
+                else
+                {
+                    message = "A database error occurred while completing your request.";
+                }
+                break;
+
             case ArgumentException:
                 statusCode = (int)HttpStatusCode.BadRequest;
                 title = "Bad Request";

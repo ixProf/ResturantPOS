@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.DTOs.Inventory;
 using Application.Services.Interfaces;
@@ -65,5 +66,26 @@ public class InventoryController : ControllerBase
     {
         var overview = await _inventoryService.GetInventoryOverviewAsync();
         return Ok(overview);
+    }
+
+    [HttpPost("purchases")]
+    public async Task<IActionResult> CreatePurchase([FromBody] CreateInventoryPurchaseDto dto)
+    {
+        int currentUserId = GetCurrentUserId();
+        var result = await _inventoryService.CreateInventoryPurchaseAsync(dto, currentUserId);
+        return CreatedAtAction(nameof(GetPurchases), new { id = result.Id }, result);
+    }
+
+    [HttpGet("purchases")]
+    public async Task<IActionResult> GetPurchases()
+    {
+        var result = await _inventoryService.GetInventoryPurchasesAsync();
+        return Ok(result);
+    }
+
+    private int GetCurrentUserId()
+    {
+        string? val = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+        return int.TryParse(val, out int userId) ? userId : 1;
     }
 }
