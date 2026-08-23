@@ -170,8 +170,22 @@ app.MapHub<OrderHub>("/hubs/order");
 
 using (var scope = app.Services.CreateScope())
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<Application.Common.Interfaces.IDatabaseSeeder>();
-    await seeder.SeedAsync();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        logger.LogInformation("Applying EF Core Database Migrations...");
+        await context.Database.MigrateAsync();
+        logger.LogInformation("EF Core Database Migrations applied successfully.");
+
+        var seeder = services.GetRequiredService<Application.Common.Interfaces.IDatabaseSeeder>();
+        await seeder.SeedAsync();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+    }
 }
 
 app.Run();

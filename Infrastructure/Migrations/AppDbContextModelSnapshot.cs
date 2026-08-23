@@ -383,7 +383,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("IngredientId");
 
-                    b.ToTable("InventoryPurchases");
+                    b.ToTable("InventoryPurchases", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.MenuItem", b =>
