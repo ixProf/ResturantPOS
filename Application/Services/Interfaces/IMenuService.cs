@@ -1,3 +1,4 @@
+using Application.DTOs.Inventory;
 using Application.DTOs.Menu;
 using Application.DTOs.Menu.Categories;
 
@@ -9,11 +10,13 @@ public interface IMenuService
     Task<MenuItemDto> CreateMenuItemAsync(CreateMenuItemDto dto);
     Task<MenuItemDetailsDto> GetMenuItemByIdAsync(int id);
     Task<IEnumerable<MenuItemDto>> GetAllMenuItemsAsync(MenuFilterDto? filter = null);
+    Task<IEnumerable<MenuItemDto>> GetAvailableMenuItemsAsync();
     Task<MenuItemDto> UpdateMenuItemAsync(int id, UpdateMenuItemDto dto);
     Task<MenuItemDto> UpdateMenuItemStatusAsync(int id, UpdateMenuItemStatusDto dto);
     Task<bool> DeleteMenuItemAsync(int id);
 
     // Recipe Management
+    Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync();
     Task<bool> AddIngredientToMenuItemAsync(int menuItemId, int ingredientId, decimal quantityUsed);
     Task<bool> RemoveIngredientFromMenuItemAsync(int menuItemId, int ingredientId);
 

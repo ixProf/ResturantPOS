@@ -9,6 +9,7 @@ import {
   Boxes,
   CreditCard,
   BarChart3,
+  Tag,
   Users,
   LogOut,
 } from 'lucide-react';
@@ -69,6 +70,12 @@ export const Sidebar: React.FC = () => {
       key: 'reports',
       path: '/reports',
       icon: <BarChart3 className="w-4 h-4" />,
+      roles: ['Manager'],
+    },
+    {
+      key: 'discounts',
+      path: '/discounts',
+      icon: <Tag className="w-4 h-4" />,
       roles: ['Manager'],
     },
     {

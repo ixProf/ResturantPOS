@@ -54,4 +54,18 @@ public class OrderNotificationService : IOrderNotificationService
             await _hubContext.Clients.All.SendAsync("ReceiveOrderUpdate", new { orderId, action = "PaymentCompleted", paymentId, amount });
         }
     }
+
+    public async Task NotifyMenuUpdatedAsync(int? menuItemId, string action)
+    {
+        if (_hubContext != null)
+        {
+            var payload = new
+            {
+                menuItemId,
+                action,
+                timestamp = System.DateTime.UtcNow
+            };
+            await _hubContext.Clients.All.SendAsync("MenuUpdated", payload);
+        }
+    }
 }

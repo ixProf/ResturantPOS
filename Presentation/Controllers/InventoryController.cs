@@ -9,7 +9,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "InventoryManager,Manager")]
+[Authorize]
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
@@ -20,6 +20,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpPost("ingredients")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> CreateIngredient([FromBody] CreateIngredientDto dto)
     {
         var result = await _inventoryService.CreateIngredientAsync(dto);
@@ -27,6 +28,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("ingredients/{id:int}")]
+    [Authorize(Roles = "InventoryManager,Manager,Chef")]
     public async Task<IActionResult> GetIngredientById(int id)
     {
         var result = await _inventoryService.GetIngredientByIdAsync(id);
@@ -34,6 +36,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("ingredients")]
+    [Authorize(Roles = "InventoryManager,Manager,Chef")]
     public async Task<IActionResult> GetAllIngredients()
     {
         var result = await _inventoryService.GetAllIngredientsAsync();
@@ -41,6 +44,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpPut("ingredients/{id:int}")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> UpdateIngredient(int id, [FromBody] UpdateIngredientDto dto)
     {
         var result = await _inventoryService.UpdateIngredientAsync(id, dto);
@@ -48,6 +52,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpPost("stock/adjust")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> AdjustStock([FromBody] StockAdjustmentDto dto)
     {
         var result = await _inventoryService.AdjustStockAsync(dto);
@@ -55,6 +60,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("alerts/low-stock")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> GetLowStockAlerts()
     {
         var alerts = await _inventoryService.GetLowStockAlertsAsync();
@@ -62,6 +68,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("overview")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> GetInventoryOverview()
     {
         var overview = await _inventoryService.GetInventoryOverviewAsync();
@@ -69,6 +76,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpPost("purchases")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> CreatePurchase([FromBody] CreateInventoryPurchaseDto dto)
     {
         int currentUserId = GetCurrentUserId();
@@ -77,6 +85,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("purchases")]
+    [Authorize(Roles = "InventoryManager,Manager")]
     public async Task<IActionResult> GetPurchases()
     {
         var result = await _inventoryService.GetInventoryPurchasesAsync();

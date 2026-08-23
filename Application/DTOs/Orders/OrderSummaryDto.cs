@@ -10,6 +10,8 @@ public class OrderSummaryDto
     public string WaiterName { get; set; } = string.Empty;
     public OrderStatus Status { get; set; }
     public decimal TotalAmount { get; set; }
+    public decimal DiscountAmount { get; set; }
+    public decimal FinalAmount { get; set; }
     public int ItemCount { get; set; }
     public DateTime CreatedAt { get; set; }
-}
+}

@@ -45,6 +45,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<Application.Common.Interfaces.IOrderNotificationService, Presentation.Services.OrderNotificationService>();
 

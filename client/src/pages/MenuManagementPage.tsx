@@ -25,9 +25,12 @@ import { Select } from '../components/ui/Select';
 import { Modal } from '../components/ui/Modal';
 import { Badge } from '../components/ui/Badge';
 import { formatCurrency } from '../utils/formatters';
+import { useAuth } from '../context/AuthContext';
+import { signalRService } from '../services/signalr';
 
 export const MenuManagementPage: React.FC = () => {
   const { i18n } = useTranslation();
+  const { user } = useAuth();
   const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItemDto[]>([]);
   const [allIngredients, setAllIngredients] = useState<IngredientDto[]>([]);
@@ -56,16 +59,32 @@ export const MenuManagementPage: React.FC = () => {
   const [addIngredientId, setAddIngredientId] = useState<number | ''>('');
   const [addQuantityUsed, setAddQuantityUsed] = useState('0.1');
 
+  const canManageMenu = user?.role === 'Manager' || user?.role === 'Chef';
+
+  const fetchIngredientsIfAllowed = async () => {
+    if (canManageMenu || user?.role === 'InventoryManager') {
+      try {
+        const ingRes = await api.get<IngredientDto[]>('/MenuItems/ingredients');
+        setAllIngredients(ingRes.data);
+      } catch {
+        try {
+          const ingRes = await api.get<IngredientDto[]>('/Inventory/ingredients');
+          setAllIngredients(ingRes.data);
+        } catch (err) {
+          console.error('Failed to load ingredients:', err);
+        }
+      }
+    }
+  };
+
   const fetchData = async () => {
     try {
-      const [catRes, menuRes, ingRes] = await Promise.all([
+      const [catRes, menuRes] = await Promise.all([
         api.get<CategoryDto[]>('/Categories'),
         api.get<MenuItemDto[]>('/MenuItems'),
-        api.get<IngredientDto[]>('/Inventory/ingredients'),
       ]);
       setCategories(catRes.data);
       setMenuItems(menuRes.data);
-      setAllIngredients(ingRes.data);
     } catch (err) {
       console.error('Failed to load menu data:', err);
     }
@@ -73,6 +92,17 @@ export const MenuManagementPage: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+
+    signalRService.startConnection().then(() => {
+      signalRService.on('MenuUpdated', (data: any) => {
+        console.log('[SignalR Event] MenuUpdated in MenuManagementPage:', data);
+        fetchData();
+      });
+    });
+
+    return () => {
+      signalRService.off('MenuUpdated');
+    };
   }, []);
 
   // Category Actions
@@ -187,6 +217,7 @@ export const MenuManagementPage: React.FC = () => {
   // Recipe Ingredient Actions
   const handleOpenRecipeModal = async (item: MenuItemDto) => {
     try {
+      await fetchIngredientsIfAllowed();
       const res = await api.get<MenuItemDetailsDto>(`/MenuItems/${item.id}`);
       setSelectedItemDetails(res.data);
       setIsRecipeModalOpen(true);
@@ -244,25 +275,27 @@ export const MenuManagementPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 gap-2">
-          <Button variant="outline" size="sm" onClick={handleOpenAddCategory}>
-            <Layers className="w-4 h-4" />
-            <span>Add Category</span>
-          </Button>
+        {canManageMenu && (
+          <div className="flex items-center space-x-2 gap-2">
+            <Button variant="outline" size="sm" onClick={handleOpenAddCategory}>
+              <Layers className="w-4 h-4" />
+              <span>Add Category</span>
+            </Button>
 
-          <Button
-            variant="brand"
-            size="sm"
-            onClick={() => {
-              setEditingItem(null);
-              resetMenuItemForm();
-              setIsMenuItemModalOpen(true);
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Menu Item</span>
-          </Button>
-        </div>
+            <Button
+              variant="brand"
+              size="sm"
+              onClick={() => {
+                setEditingItem(null);
+                resetMenuItemForm();
+                setIsMenuItemModalOpen(true);
+              }}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Menu Item</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Category Pills & CRUD Bar */}
@@ -276,20 +309,24 @@ export const MenuManagementPage: React.FC = () => {
             className="flex items-center space-x-1 gap-1 px-2.5 py-1 rounded-lg bg-[var(--secondary-bg)] border border-[var(--glass-border-color)] text-xs text-[var(--fg-color)]"
           >
             <span className="font-medium">{cat.name}</span>
-            <button
-              onClick={() => handleOpenEditCategory(cat)}
-              className="p-1 text-[var(--muted-fg)] hover:text-[var(--fg-color)]"
-              title="Edit Category"
-            >
-              <Edit className="w-3 h-3" />
-            </button>
-            <button
-              onClick={() => handleDeleteCategory(cat.id)}
-              className="p-1 text-[var(--muted-fg)] hover:text-rose-400"
-              title="Delete Category"
-            >
-              <Trash2 className="w-3 h-3" />
-            </button>
+            {canManageMenu && (
+              <>
+                <button
+                  onClick={() => handleOpenEditCategory(cat)}
+                  className="p-1 text-[var(--muted-fg)] hover:text-[var(--fg-color)]"
+                  title="Edit Category"
+                >
+                  <Edit className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => handleDeleteCategory(cat.id)}
+                  className="p-1 text-[var(--muted-fg)] hover:text-rose-400"
+                  title="Delete Category"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -356,21 +393,23 @@ export const MenuManagementPage: React.FC = () => {
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-end space-x-1 gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOpenRecipeModal(item)}
-                      className="p-1.5"
-                      title="Manage Recipe Ingredients"
-                    >
-                      <Utensils className="w-3.5 h-3.5" />
-                    </Button>
+                    {canManageMenu && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenRecipeModal(item)}
+                        className="p-1.5"
+                        title="Manage Recipe Ingredients"
+                      >
+                        <Utensils className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleToggleStatus(item)}
                       className="p-1.5"
-                      title="Toggle Stock"
+                      title="Toggle Stock / Availability"
                     >
                       {item.isAvailable ? (
                         <Check className="w-3.5 h-3.5 text-emerald-400" />
@@ -378,22 +417,26 @@ export const MenuManagementPage: React.FC = () => {
                         <X className="w-3.5 h-3.5 text-rose-400" />
                       )}
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenEdit(item)}
-                      className="p-1.5"
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteItem(item.id)}
-                      className="p-1.5 text-rose-400 hover:text-rose-300"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
+                    {canManageMenu && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenEdit(item)}
+                          className="p-1.5"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteItem(item.id)}
+                          className="p-1.5 text-rose-400 hover:text-rose-300"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -520,14 +563,29 @@ export const MenuManagementPage: React.FC = () => {
                         ({ing.quantityUsed} {ing.unit})
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveIngredientFromRecipe(ing.ingredientId)}
-                      className="p-1 text-rose-400 hover:text-rose-300"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
+                    <div className="flex items-center space-x-1 gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAddIngredientId(ing.ingredientId);
+                          setAddQuantityUsed(ing.quantityUsed.toString());
+                        }}
+                        className="p-1 text-[var(--muted-fg)] hover:text-[var(--fg-color)]"
+                        title="Edit Quantity"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveIngredientFromRecipe(ing.ingredientId)}
+                        className="p-1 text-rose-400 hover:text-rose-300"
+                        title="Remove Ingredient"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

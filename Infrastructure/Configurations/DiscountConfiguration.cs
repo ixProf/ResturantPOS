@@ -15,6 +15,19 @@ public class DiscountConfiguration : IEntityTypeConfiguration<Discount>
         builder.Property(d => d.Id)
             .ValueGeneratedOnAdd();
 
+        builder.Property(d => d.Name)
+            .HasMaxLength(100)
+            .HasDefaultValue(string.Empty);
+
+        builder.Property(d => d.Type)
+            .HasConversion<string>()
+            .HasMaxLength(30)
+            .HasDefaultValue(Domain.Enums.DiscountType.Percentage);
+
+        builder.Property(d => d.Value)
+            .HasPrecision(18, 2)
+            .HasDefaultValue(0m);
+
         builder.Property(d => d.DiscountPercent)
             .HasPrecision(5, 2);
 
@@ -25,7 +38,14 @@ public class DiscountConfiguration : IEntityTypeConfiguration<Discount>
             .IsRequired()
             .HasMaxLength(255);
 
-        builder.Property(d => d.AppliedAt);
+        builder.Property(d => d.IsActive)
+            .HasDefaultValue(true);
+
+        builder.Property(d => d.IsApproved)
+            .HasDefaultValue(true);
+
+        builder.Property(d => d.OrderId)
+            .IsRequired(false);
 
         builder.HasOne(d => d.Order)
             .WithMany(o => o.Discounts)
@@ -37,8 +57,13 @@ public class DiscountConfiguration : IEntityTypeConfiguration<Discount>
             .HasForeignKey(d => d.ApprovedBy)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(d => d.OrderId);
+        builder.HasOne(d => d.CreatedBy)
+            .WithMany()
+            .HasForeignKey(d => d.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasIndex(d => d.OrderId);
         builder.HasIndex(d => d.ApprovedBy);
+        builder.HasIndex(d => d.CreatedById);
     }
 }

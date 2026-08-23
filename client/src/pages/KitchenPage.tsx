@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UtensilsCrossed, RefreshCw } from 'lucide-react';
+import { UtensilsCrossed, RefreshCw, BookOpen, Check, X } from 'lucide-react';
 import api from '../services/api';
-import type { OrderDetailsDto, OrderItemStatus, OrderSummaryDto } from '../types/api';
+import type { OrderDetailsDto, OrderItemStatus, OrderSummaryDto, MenuItemDto } from '../types/api';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { formatDateTime } from '../utils/formatters';
+import { formatCurrency, formatDateTime } from '../utils/formatters';
 import { signalRService } from '../services/signalr';
 
 export const KitchenPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [orders, setOrders] = useState<OrderDetailsDto[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItemDto[]>([]);
+  const [activeTab, setActiveTab] = useState<'tickets' | 'menu'>('tickets');
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchKitchenOrders = async () => {
     setIsLoading(true);
     try {
       const res = await api.get<OrderSummaryDto[]>('/Orders');
-      // Filter orders relevant for kitchen
       const kitchenSummaries = res.data.filter(
         (o) => o.status === 'Submitted' || o.status === 'Preparing' || o.status === 'Ready'
       );
       
-      // Fetch full OrderDetailsDto for each candidate ticket so order.items is fully populated
       const fullDetails = await Promise.all(
         kitchenSummaries.map((s) => api.get<OrderDetailsDto>(`/Orders/${s.id}`).then((r) => r.data))
       );
@@ -35,20 +35,46 @@ export const KitchenPage: React.FC = () => {
     }
   };
 
+  const fetchMenuItems = async () => {
+    try {
+      const menuRes = await api.get<MenuItemDto[]>('/MenuItems');
+      setMenuItems(menuRes.data);
+    } catch (err) {
+      console.error('Failed to load menu items in Kitchen:', err);
+    }
+  };
+
   useEffect(() => {
     fetchKitchenOrders();
+    fetchMenuItems();
 
     signalRService.startConnection().then(() => {
       signalRService.on('ReceiveOrderUpdate', (data: any) => {
         console.log('[SignalR Event] ReceiveOrderUpdate in KitchenPage:', data);
         fetchKitchenOrders();
       });
+
+      signalRService.on('MenuUpdated', (data: any) => {
+        console.log('[SignalR Event] MenuUpdated in KitchenPage:', data);
+        fetchMenuItems();
+        fetchKitchenOrders();
+      });
     });
 
     return () => {
       signalRService.off('ReceiveOrderUpdate');
+      signalRService.off('MenuUpdated');
     };
   }, []);
+
+  const handleToggleMenuItemStatus = async (item: MenuItemDto) => {
+    try {
+      await api.put(`/MenuItems/${item.id}/status`, { isAvailable: !item.isAvailable });
+      fetchMenuItems();
+    } catch (err) {
+      console.error('Failed to toggle menu item status:', err);
+    }
+  };
 
   const handleUpdateItemStatus = async (orderId: number, itemId: number, status: OrderItemStatus) => {
     try {
@@ -71,7 +97,7 @@ export const KitchenPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex justify-between items-center bg-[var(--card-bg)] p-4 rounded-xl border border-[var(--border-color)]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-xl border border-[var(--border-color)]">
         <div className="flex items-center space-x-3 gap-3">
           <div className="p-2.5 rounded-lg bg-[var(--secondary-bg)] border border-[var(--glass-border-color)]">
             <UtensilsCrossed className="w-5 h-5 text-[var(--primary-color)]" />
@@ -79,19 +105,116 @@ export const KitchenPage: React.FC = () => {
           <div>
             <h2 className="text-base font-bold text-[var(--fg-color)]">Kitchen Display Terminal</h2>
             <p className="text-xs text-[var(--muted-fg)]">
-              Active tickets: {orders.length} orders
+              Active tickets: {orders.length} orders • Menu catalog: {menuItems.length} items
             </p>
           </div>
         </div>
 
-        <Button variant="outline" size="sm" onClick={fetchKitchenOrders}>
-          <RefreshCw className="w-4 h-4" />
-          <span>Refresh</span>
-        </Button>
+        <div className="flex items-center space-x-2 gap-2">
+          <div className="flex p-1 rounded-lg bg-[var(--secondary-bg)] border border-[var(--border-color)]">
+            <button
+              onClick={() => setActiveTab('tickets')}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                activeTab === 'tickets'
+                  ? 'bg-[var(--primary-color)] text-white shadow-xs'
+                  : 'text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
+              }`}
+            >
+              {i18n.language === 'ar' ? 'تذاكر الطلبات' : 'Kitchen Tickets'} ({orders.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('menu')}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                activeTab === 'menu'
+                  ? 'bg-[var(--primary-color)] text-white shadow-xs'
+                  : 'text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
+              }`}
+            >
+              {i18n.language === 'ar' ? 'قائمة الوجبات' : 'Live Menu Catalog'} ({menuItems.length})
+            </button>
+          </div>
+
+          <Button variant="outline" size="sm" onClick={() => { fetchKitchenOrders(); fetchMenuItems(); }}>
+            <RefreshCw className="w-4 h-4" />
+            <span>{i18n.language === 'ar' ? 'تحديث' : 'Refresh'}</span>
+          </Button>
+        </div>
       </div>
 
-      {/* Tickets Grid */}
-      {isLoading ? (
+      {activeTab === 'menu' ? (
+        <Card className="overflow-hidden p-0 border border-[var(--border-color)]">
+          <div className="p-4 border-b border-[var(--border-color)] bg-[var(--secondary-bg)]/40 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-[var(--primary-color)]" />
+              <h3 className="font-bold text-sm text-[var(--fg-color)]">
+                {i18n.language === 'ar' ? 'قائمة أصناف المطعم (المُدارة من المدير)' : 'Restaurant Menu Catalog (Managed by Manager)'}
+              </h3>
+            </div>
+            <span className="text-xs text-[var(--muted-fg)]">
+              {i18n.language === 'ar' ? 'يمكن للشيف تغيير حالة توفر الصنف مباشرة' : 'Chef can toggle availability if ingredient runs out'}
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-start text-xs">
+              <thead className="bg-[var(--sidebar-bg)] border-b border-[var(--border-color)] text-[var(--muted-fg)] uppercase font-semibold">
+                <tr>
+                  <th className="px-4 py-3 text-start">{i18n.language === 'ar' ? 'الصنف' : 'Item Name'}</th>
+                  <th className="px-4 py-3 text-start">{i18n.language === 'ar' ? 'التصنيف' : 'Category'}</th>
+                  <th className="px-4 py-3 text-start">{i18n.language === 'ar' ? 'السعر' : 'Price'}</th>
+                  <th className="px-4 py-3 text-start">{i18n.language === 'ar' ? 'حالة التوفر' : 'Availability'}</th>
+                  <th className="px-4 py-3 text-end">{i18n.language === 'ar' ? 'تغيير الحالة' : 'Toggle Stock'}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border-color)]">
+                {menuItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-[var(--secondary-bg)]/40 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-[var(--fg-color)]">
+                      {item.name}
+                      {item.description && (
+                        <p className="text-[11px] text-[var(--muted-fg)] font-normal truncate max-w-xs">
+                          {item.description}
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--muted-fg)] font-medium">
+                      {item.categoryName || 'General'}
+                    </td>
+                    <td className="px-4 py-3 font-mono font-bold text-[var(--fg-color)]">
+                      {formatCurrency(item.price, i18n.language)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge status={item.isAvailable ? 'Available' : 'OutOfService'}>
+                        {item.isAvailable ? (i18n.language === 'ar' ? 'متاح' : 'Available') : (i18n.language === 'ar' ? 'غير متاح (نفذ)' : 'Unavailable (86ed)')}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-end">
+                      <Button
+                        variant={item.isAvailable ? 'outline' : 'primary'}
+                        size="sm"
+                        onClick={() => handleToggleMenuItemStatus(item)}
+                        className="gap-1 text-[11px]"
+                      >
+                        {item.isAvailable ? (
+                          <>
+                            <X className="w-3.5 h-3.5 text-rose-400" />
+                            <span>{i18n.language === 'ar' ? 'تعطيل الصنف' : 'Mark 86ed'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>{i18n.language === 'ar' ? 'تفعيل الصنف' : 'Make Available'}</span>
+                          </>
+                        )}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      ) : isLoading ? (
         <div className="py-20 text-center text-sm text-[var(--muted-fg)]">
           {t('common.loading')}
         </div>

@@ -14,6 +14,7 @@ import { InventoryPage } from './pages/InventoryPage';
 import { PaymentsPage } from './pages/PaymentsPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { EmployeesPage } from './pages/EmployeesPage';
+import { DiscountsPage } from './pages/DiscountsPage';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 
 export const App: React.FC = () => {
@@ -48,6 +49,10 @@ export const App: React.FC = () => {
 
             <Route element={<ProtectedRoute title="Payments & Receipt Checkout" allowedRoles={['Manager', 'Cashier']} />}>
               <Route path="/payments" element={<PaymentsPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute title="Discount & Promotion Management" allowedRoles={['Manager']} />}>
+              <Route path="/discounts" element={<DiscountsPage />} />
             </Route>
 
             <Route element={<ProtectedRoute title="Executive Sales Analytics" allowedRoles={['Manager']} />}>

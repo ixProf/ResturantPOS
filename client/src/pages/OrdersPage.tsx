@@ -99,10 +99,16 @@ export const OrdersPage: React.FC = () => {
           loadActiveOrder(Number(selectedTableId));
         }
       });
+
+      signalRService.on('MenuUpdated', (data: any) => {
+        console.log('[SignalR Event] MenuUpdated in OrdersPage:', data);
+        loadData();
+      });
     });
 
     return () => {
       signalRService.off('ReceiveOrderUpdate');
+      signalRService.off('MenuUpdated');
     };
   }, []);
 

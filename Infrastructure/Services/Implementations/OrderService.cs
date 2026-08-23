@@ -131,7 +131,7 @@ public class OrderService : IOrderService
             {
                 Id = oi.Id,
                 MenuItemId = oi.MenuItemId,
-                MenuItemName = oi.MenuItem.Name,
+                MenuItemName = oi.MenuItem?.Name ?? $"Item #{oi.MenuItemId}",
                 UnitPrice = oi.UnitPrice,
                 Quantity = oi.Quantity,
                 TotalPrice = oi.UnitPrice * oi.Quantity,
@@ -589,6 +589,15 @@ public class OrderService : IOrderService
 
     private static OrderSummaryDto MapToOrderSummaryDto(Order order)
     {
+        decimal total = order.TotalAmount > 0
+            ? order.TotalAmount
+            : (order.OrderItems?.Where(i => i.Status != OrderItemStatus.Cancelled && i.Status != OrderItemStatus.Voided).Sum(i => i.UnitPrice * i.Quantity) ?? 0m);
+
+        decimal discount = order.DiscountAmount;
+        decimal final = order.FinalAmount > 0 || discount > 0
+            ? order.FinalAmount
+            : Math.Max(0m, total - discount);
+
         return new OrderSummaryDto
         {
             Id = order.Id,
@@ -596,7 +605,9 @@ public class OrderService : IOrderService
             TableNumber = order.Table?.TableNumber ?? 0,
             WaiterName = order.Waiter?.FullName ?? string.Empty,
             Status = order.Status,
-            TotalAmount = order.FinalAmount,
+            TotalAmount = total,
+            DiscountAmount = discount,
+            FinalAmount = final,
             ItemCount = order.OrderItems.Count(i => i.Status != OrderItemStatus.Cancelled && i.Status != OrderItemStatus.Voided),
             CreatedAt = order.CreatedAt ?? DateTime.UtcNow
         };

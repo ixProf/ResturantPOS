@@ -184,16 +184,28 @@ public class PaymentService : IPaymentService
         if (order == null)
             throw new KeyNotFoundException($"Order '{orderId}' not found.");
 
-        var payment = order.Payments.OrderByDescending(p => p.PaidAt).FirstOrDefault();
+        var payment = await _unitOfWork.Payments.Query()
+            .Include(p => p.Cashier)
+            .Where(p => p.OrderId == orderId)
+            .OrderByDescending(p => p.PaidAt)
+            .FirstOrDefaultAsync();
+
+        string receiptNum = !string.IsNullOrWhiteSpace(payment?.ReceiptNumber)
+            ? payment.ReceiptNumber
+            : $"INV-{(payment?.PaidAt ?? DateTime.UtcNow):yyyyMMdd}-{order.Id}";
 
         return new InvoiceDto
         {
             OrderId = order.Id,
+            ReceiptNumber = receiptNum,
             TableNumber = order.Table?.TableNumber ?? 0,
-            WaiterName = order.Waiter?.FullName ?? string.Empty,
-            SubTotal = order.TotalAmount,
+            WaiterName = order.Waiter?.FullName ?? "N/A",
+            CashierName = payment?.Cashier?.FullName ?? "Cashier",
+            SubTotal = order.TotalAmount > 0 ? order.TotalAmount : order.FinalAmount + order.DiscountAmount,
             DiscountAmount = order.DiscountAmount,
             FinalAmount = order.FinalAmount,
+            AmountPaid = payment?.FinalAmount ?? order.FinalAmount,
+            ChangeAmount = 0.00m,
             PaymentMethod = payment?.PaymentMethod ?? PaymentMethod.Cash,
             PaidAt = payment?.PaidAt ?? DateTime.UtcNow,
             Items = order.OrderItems.Select(oi => new OrderItemDto
@@ -265,37 +277,147 @@ public class PaymentService : IPaymentService
     public async Task<bool> ApplyDiscountAsync(int orderId, ApplyDiscountDto dto, int approvedByEmployeeId)
     {
         var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
+
         if (order == null)
             throw new KeyNotFoundException($"Order '{orderId}' not found.");
 
-        if (order.Status == OrderStatus.Completed)
-            throw new InvalidOperationException("Cannot apply discount to a completed order.");
+        if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Cancelled)
+            throw new InvalidOperationException($"Cannot apply discount to an order with status '{order.Status}'.");
 
         var approver = await _unitOfWork.Employees.GetByIdAsync(approvedByEmployeeId);
         if (approver == null)
-            throw new KeyNotFoundException($"Approving employee '{approvedByEmployeeId}' not found.");
+            throw new KeyNotFoundException($"Employee '{approvedByEmployeeId}' not found.");
 
-        if (dto.DiscountAmount < 0)
+        if (order.OrderItems == null)
+        {
+            if (_unitOfWork.OrderItems != null)
+            {
+                var items = await _unitOfWork.OrderItems.FindAsync(oi => oi.OrderId == orderId && oi.Status != OrderItemStatus.Cancelled && oi.Status != OrderItemStatus.Voided);
+                order.OrderItems = items?.ToList() ?? [];
+            }
+            else
+            {
+                order.OrderItems = [];
+            }
+        }
+
+        decimal subtotal = order.TotalAmount > 0
+            ? order.TotalAmount
+            : (order.OrderItems?.Sum(i => i.UnitPrice * i.Quantity) ?? 0m);
+
+        if (subtotal <= 0)
+            throw new InvalidOperationException("Cannot apply discount to an order with a subtotal of 0.");
+
+        decimal calculatedDiscount = 0m;
+        decimal? discountPercent = null;
+        string reason = dto.Reason?.Trim() ?? "Manager approved discount";
+        int? templateId = null;
+
+        if (dto.DiscountId.HasValue && dto.DiscountId.Value > 0)
+        {
+            var discountTemplate = await _unitOfWork.Discounts.GetByIdAsync(dto.DiscountId.Value);
+            if (discountTemplate == null)
+                throw new KeyNotFoundException($"Discount template '{dto.DiscountId.Value}' not found.");
+
+            if (!discountTemplate.IsActive || !discountTemplate.IsApproved)
+                throw new InvalidOperationException("Selected discount is inactive or not approved.");
+
+            var now = DateTime.UtcNow;
+            if (discountTemplate.ValidFrom.HasValue && discountTemplate.ValidFrom.Value > now)
+                throw new InvalidOperationException("Selected discount is not yet valid.");
+
+            if (discountTemplate.ValidTo.HasValue && discountTemplate.ValidTo.Value < now)
+                throw new InvalidOperationException("Selected discount has expired.");
+
+            templateId = discountTemplate.Id;
+            reason = string.IsNullOrWhiteSpace(dto.Reason) ? discountTemplate.Name : dto.Reason;
+
+            if (discountTemplate.Type == DiscountType.Percentage)
+            {
+                discountPercent = discountTemplate.Value;
+                calculatedDiscount = Math.Round(subtotal * (discountTemplate.Value / 100m), 2);
+            }
+            else
+            {
+                calculatedDiscount = Math.Round(discountTemplate.Value, 2);
+            }
+        }
+        else if (dto.DiscountPercent.HasValue && dto.DiscountPercent.Value > 0)
+        {
+            if (dto.DiscountPercent.Value > 100)
+                throw new ArgumentException("Percentage discount cannot exceed 100%.");
+
+            discountPercent = dto.DiscountPercent.Value;
+            calculatedDiscount = Math.Round(subtotal * (dto.DiscountPercent.Value / 100m), 2);
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                reason = $"{dto.DiscountPercent.Value}% Discount";
+            }
+        }
+        else if (dto.DiscountAmount.HasValue && dto.DiscountAmount.Value > 0)
+        {
+            calculatedDiscount = Math.Round(dto.DiscountAmount.Value, 2);
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                reason = $"{dto.DiscountAmount.Value} EGP Discount";
+            }
+        }
+        else
+        {
+            throw new ArgumentException("Must specify a valid discount ID, percentage, or fixed amount.");
+        }
+
+        if (calculatedDiscount < 0)
             throw new ArgumentException("Discount amount cannot be negative.");
 
-        if (dto.DiscountAmount > order.TotalAmount)
-            throw new InvalidOperationException("Discount amount cannot exceed the total order amount.");
+        if (calculatedDiscount > subtotal)
+            throw new InvalidOperationException("Discount amount cannot exceed the order subtotal.");
 
-        order.DiscountAmount = dto.DiscountAmount;
-        order.FinalAmount = Math.Max(0, order.TotalAmount - dto.DiscountAmount);
-        _unitOfWork.Orders.Update(order);
+        decimal finalAmount = Math.Max(0m, subtotal - calculatedDiscount);
 
-        await _unitOfWork.Discounts.AddAsync(new Discount
+        using var transaction = await _unitOfWork.BeginTransactionAsync();
+        try
         {
-            OrderId = orderId,
-            ApprovedBy = approvedByEmployeeId,
-            DiscountAmount = dto.DiscountAmount,
-            Reason = dto.Reason ?? "Manager approved discount",
-            CreatedAt = DateTime.UtcNow
-        });
+            order.TotalAmount = subtotal;
+            order.DiscountAmount = calculatedDiscount;
+            order.FinalAmount = finalAmount;
+            order.UpdatedAt = DateTime.UtcNow;
 
-        await _unitOfWork.SaveChangesAsync();
-        return true;
+            _unitOfWork.Orders.Update(order);
+
+            var appliedDiscount = new Discount
+            {
+                OrderId = orderId,
+                Name = reason,
+                Type = discountPercent.HasValue ? DiscountType.Percentage : DiscountType.FixedAmount,
+                Value = discountPercent ?? calculatedDiscount,
+                DiscountPercent = discountPercent,
+                DiscountAmount = calculatedDiscount,
+                Reason = reason,
+                IsActive = true,
+                IsApproved = true,
+                ApprovedBy = approvedByEmployeeId,
+                CreatedById = approvedByEmployeeId,
+                AppliedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _unitOfWork.Discounts.AddAsync(appliedDiscount);
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitTransactionAsync();
+
+            if (_notificationService != null)
+            {
+                await _notificationService.NotifyOrderUpdatedAsync(order.Id, "DiscountApplied");
+            }
+
+            return true;
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
     }
 
     private static PaymentDto MapToPaymentDto(Payment p)

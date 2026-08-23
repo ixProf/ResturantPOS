@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
+using Application.DTOs.Inventory;
 using Application.DTOs.Menu;
 using Application.DTOs.Menu.Categories;
 using Application.Services.Interfaces;
@@ -91,6 +92,15 @@ public class MenuService : IMenuService
         return items.Select(m => MapToMenuItemDto(m, m.Category?.Name ?? string.Empty));
     }
 
+    public async Task<IEnumerable<MenuItemDto>> GetAvailableMenuItemsAsync()
+    {
+        var items = await _unitOfWork.MenuItems.Query()
+            .Include(m => m.Category)
+            .Where(m => m.IsAvailable == true)
+            .ToListAsync();
+        return items.Select(m => MapToMenuItemDto(m, m.Category?.Name ?? string.Empty));
+    }
+
     public async Task<MenuItemDto> UpdateMenuItemAsync(int id, UpdateMenuItemDto dto)
     {
         var item = await _unitOfWork.MenuItems.GetByIdAsync(id);
@@ -134,6 +144,19 @@ public class MenuService : IMenuService
         _unitOfWork.MenuItems.Remove(item);
         await _unitOfWork.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync()
+    {
+        var ingredients = await _unitOfWork.Ingredients.GetAllAsync();
+        return ingredients.Select(i => new IngredientDto
+        {
+            Id = i.Id,
+            Name = i.Name,
+            TotalStock = i.TotalStock,
+            Unit = i.Unit,
+            LowStockAlert = i.LowStockAlert
+        });
     }
 
     public async Task<bool> AddIngredientToMenuItemAsync(int menuItemId, int ingredientId, decimal quantityUsed)

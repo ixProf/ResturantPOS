@@ -115,6 +115,8 @@ export interface OrderSummaryDto {
   waiterName: string;
   status: OrderStatus;
   totalAmount: number;
+  discountAmount?: number;
+  finalAmount?: number;
   itemCount: number;
   createdAt: string;
 }
@@ -259,18 +261,80 @@ export interface CreatePaymentDto {
 
 export interface InvoiceDto {
   orderId: number;
+  receiptNumber?: string;
   tableNumber: number;
   waiterName: string;
+  cashierName?: string;
   items: OrderItemDto[];
   subTotal: number;
   discountAmount: number;
   finalAmount: number;
+  amountPaid?: number;
+  changeAmount?: number;
   paymentMethod: PaymentMethod;
   paidAt: string;
+
+  restaurantName?: string;
+  restaurantNameArabic?: string;
+  restaurantAddress?: string;
+  restaurantAddressArabic?: string;
+  restaurantPhone?: string;
+  taxRegistrationNumber?: string;
+  commercialRegistrationNumber?: string;
+}
+
+export type DiscountType = 'Percentage' | 'FixedAmount';
+
+export interface CreateDiscountDto {
+  name: string;
+  type: DiscountType;
+  value: number;
+  reason: string;
+  isActive: boolean;
+  isApproved: boolean;
+  validFrom?: string;
+  validTo?: string;
+}
+
+export interface UpdateDiscountDto {
+  name: string;
+  type: DiscountType;
+  value: number;
+  reason: string;
+  isActive: boolean;
+  isApproved: boolean;
+  validFrom?: string;
+  validTo?: string;
+}
+
+export interface UpdateDiscountStatusDto {
+  isActive: boolean;
+  isApproved?: boolean;
+}
+
+export interface DiscountResponseDto {
+  id: number;
+  name: string;
+  type: DiscountType;
+  typeName: string;
+  value: number;
+  discountPercent?: number;
+  discountAmount?: number;
+  reason: string;
+  isActive: boolean;
+  isApproved: boolean;
+  validFrom?: string;
+  validTo?: string;
+  createdById?: number;
+  createdByName?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ApplyDiscountDto {
-  discountAmount: number;
+  discountId?: number;
+  discountAmount?: number;
+  discountPercent?: number;
   reason?: string;
 }
 

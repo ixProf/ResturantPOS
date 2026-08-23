@@ -60,7 +60,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpPost("orders/{orderId:int}/discount")]
-    [Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Cashier,Manager")]
     public async Task<IActionResult> ApplyDiscount(int orderId, [FromBody] ApplyDiscountDto dto)
     {
         int approvedById = GetCurrentUserId();

@@ -9,6 +9,7 @@ import type {
   InvoiceDto,
   RefundType,
   PaymentDto,
+  DiscountResponseDto,
 } from '../types/api';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -18,6 +19,7 @@ import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { formatCurrency, formatDateTime } from '../utils/formatters';
 import { useAuth } from '../context/AuthContext';
+import { PrintableInvoice } from '../components/invoice/PrintableInvoice';
 import { signalRService } from '../services/signalr';
 
 export const PaymentsPage: React.FC = () => {
@@ -52,23 +54,29 @@ export const PaymentsPage: React.FC = () => {
   const [invoice, setInvoice] = useState<InvoiceDto | null>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
+  const [activeDiscounts, setActiveDiscounts] = useState<DiscountResponseDto[]>([]);
+  const [selectedDiscountId, setSelectedDiscountId] = useState<string>('custom');
+  const [discountPercent, setDiscountPercent] = useState<string>('');
+
   const fetchPaymentsData = async () => {
-    setIsLoading(true);
     try {
-      const [ordersRes, paymentsRes] = await Promise.all([
+      setIsLoading(true);
+      const [ordersRes, paymentsRes, activeDiscRes] = await Promise.all([
         api.get<OrderSummaryDto[]>('/Orders'),
         api.get<PaymentDto[]>('/Payments'),
+        api.get<DiscountResponseDto[]>('/Discounts/active').catch(() => ({ data: [] })),
       ]);
-      const readySummaries = ordersRes.data.filter(
-        (o) => o.status === 'Served' || o.status === 'PaymentPending' || o.status === 'Ready'
+
+      const unpaid = ordersRes.data.filter(
+        (o) => o.status === 'Served' || o.status === 'Ready' || o.status === 'Submitted' || o.status === 'Preparing'
       );
-      const fullOrders = await Promise.all(
-        readySummaries.map((s) => api.get<OrderDetailsDto>(`/Orders/${s.id}`).then((r) => r.data))
-      );
-      setPendingOrders(fullOrders);
+      setPendingOrders(unpaid as any);
       setPayments(paymentsRes.data);
+      if (activeDiscRes.data) {
+        setActiveDiscounts(activeDiscRes.data);
+      }
     } catch (err) {
-      console.error('Failed to load payments data:', err);
+      console.error('Failed to fetch payments data:', err);
     } finally {
       setIsLoading(false);
     }
@@ -77,15 +85,15 @@ export const PaymentsPage: React.FC = () => {
   useEffect(() => {
     fetchPaymentsData();
 
+    // SignalR Real-time Updates
     signalRService.startConnection().then(() => {
-      signalRService.on('ReceiveOrderUpdate', (data: any) => {
-        console.log('[SignalR Event] ReceiveOrderUpdate in PaymentsPage:', data);
-        fetchPaymentsData();
-      });
+      signalRService.on('ReceiveOrderUpdate', () => fetchPaymentsData());
+      signalRService.on('SalesUpdated', () => fetchPaymentsData());
     });
 
     return () => {
       signalRService.off('ReceiveOrderUpdate');
+      signalRService.off('SalesUpdated');
     };
   }, []);
 
@@ -114,19 +122,67 @@ export const PaymentsPage: React.FC = () => {
     }
   };
 
+  const handleOpenDiscountModal = (order: any) => {
+    const subtotal = Number(order.totalAmount || 0);
+    const discount = Number(order.discountAmount || 0);
+    const final = Number(order.finalAmount ?? Math.max(0, subtotal - discount));
+
+    setSelectedOrder({
+      id: order.id,
+      tableId: order.tableId,
+      tableNumber: order.tableNumber,
+      waiterId: 0,
+      waiterName: order.waiterName,
+      status: order.status,
+      totalAmount: subtotal,
+      discountAmount: discount,
+      finalAmount: final,
+      createdAt: order.createdAt,
+      items: [],
+    });
+    setSelectedDiscountId('custom');
+    setDiscountAmount('');
+    setDiscountPercent('');
+    setDiscountReason('');
+    setIsDiscountModalOpen(true);
+  };
+
   const handleApplyDiscount = async () => {
-    if (!selectedOrder || !discountAmount) return;
+    if (!selectedOrder) return;
     try {
-      await api.post(`/Payments/orders/${selectedOrder.id}/discount`, {
-        discountAmount: Number(discountAmount),
-        reason: discountReason,
-      });
+      if (selectedDiscountId !== 'custom' && Number(selectedDiscountId) > 0) {
+        await api.post(`/Payments/orders/${selectedOrder.id}/discount`, {
+          discountId: Number(selectedDiscountId),
+          reason: discountReason || undefined,
+        });
+      } else if (discountPercent && Number(discountPercent) > 0) {
+        await api.post(`/Payments/orders/${selectedOrder.id}/discount`, {
+          discountPercent: Number(discountPercent),
+          reason: discountReason || `${discountPercent}% Discount`,
+        });
+      } else if (discountAmount && Number(discountAmount) > 0) {
+        await api.post(`/Payments/orders/${selectedOrder.id}/discount`, {
+          discountAmount: Number(discountAmount),
+          reason: discountReason || `${discountAmount} EGP Discount`,
+        });
+      } else {
+        alert(i18n.language === 'ar' ? 'يرجى تحديد خصم صالح.' : 'Please select or enter a valid discount.');
+        return;
+      }
+
       setIsDiscountModalOpen(false);
-      setDiscountAmount('');
-      setDiscountReason('');
       fetchPaymentsData();
-    } catch (err) {
-      console.error('Failed to apply discount:', err);
+    } catch (err: any) {
+      console.error('Failed to apply discount error detail:', err);
+      const serverMsg =
+        err?.response?.data?.message ||
+        err?.response?.data?.title ||
+        (err?.response?.status === 403
+          ? (i18n.language === 'ar' ? 'غير مصرح لك بتطبيق الخصم.' : 'You are not authorized to apply this discount.')
+          : err?.response?.status === 400
+          ? (i18n.language === 'ar' ? 'طلب الخصم غير صالح.' : 'Invalid discount request.')
+          : (i18n.language === 'ar' ? 'فشل تطبيق الخصم.' : 'Failed to apply discount.'));
+      alert(serverMsg);
     }
   };
 
@@ -226,19 +282,16 @@ export const PaymentsPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-2 gap-2">
-                  {user?.role === 'Manager' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedOrder(order);
-                        setIsDiscountModalOpen(true);
-                      }}
-                      title="Apply Discount"
-                    >
-                      <Percent className="w-3.5 h-3.5" />
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenDiscountModal(order)}
+                    title={i18n.language === 'ar' ? 'تطبيق خصم' : 'Apply Discount'}
+                    className="gap-1 text-xs"
+                  >
+                    <Percent className="w-3.5 h-3.5" />
+                    <span>{i18n.language === 'ar' ? 'خصم' : 'Discount'}</span>
+                  </Button>
                   <Button
                     variant="brand"
                     size="sm"
@@ -366,29 +419,81 @@ export const PaymentsPage: React.FC = () => {
       <Modal
         isOpen={isDiscountModalOpen}
         onClose={() => setIsDiscountModalOpen(false)}
-        title="Apply Discount to Order"
+        title={i18n.language === 'ar' ? `تطبيق خصم على الطلب #${selectedOrder?.id}` : `Apply Discount to Order #${selectedOrder?.id}`}
       >
-        <div className="space-y-4">
-          <Input
-            label="Discount Amount ($)"
-            type="number"
-            value={discountAmount}
-            onChange={(e) => setDiscountAmount(e.target.value)}
-            placeholder="e.g. 5.00"
+        <div className="space-y-4 text-xs">
+          {/* Order Summary Header */}
+          <div className="p-3 rounded-lg bg-[var(--secondary-bg)] border border-[var(--border-color)] space-y-1">
+            <div className="flex justify-between text-[var(--muted-fg)]">
+              <span>{i18n.language === 'ar' ? 'إجمالي الطلب (Subtotal):' : 'Order Subtotal:'}</span>
+              <span className="font-mono">{formatCurrency(selectedOrder?.totalAmount || selectedOrder?.finalAmount || 0, i18n.language)}</span>
+            </div>
+            {selectedOrder?.discountAmount && selectedOrder.discountAmount > 0 ? (
+              <div className="flex justify-between text-emerald-400">
+                <span>{i18n.language === 'ar' ? 'الخصم المطبق حالياً:' : 'Current Discount:'}</span>
+                <span className="font-mono">-{formatCurrency(selectedOrder.discountAmount, i18n.language)}</span>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Active Discounts Picker */}
+          <Select
+            label={i18n.language === 'ar' ? 'اختر خصم معتمد من المدير' : 'Select Manager Approved Discount'}
+            value={selectedDiscountId}
+            onChange={(e) => setSelectedDiscountId(e.target.value)}
+            options={[
+              { value: 'custom', label: i18n.language === 'ar' ? '-- خصم مخصص / نسبة مئوية --' : '-- Custom Discount / Percentage --' },
+              ...activeDiscounts.map((d) => ({
+                value: d.id.toString(),
+                label: `${d.name} (${d.type === 'Percentage' ? `${d.value}%` : `${d.value} EGP`}) - ${d.reason}`,
+              })),
+            ]}
           />
+
+          {selectedDiscountId === 'custom' && (
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <Input
+                label={i18n.language === 'ar' ? 'نسبة الخصم (%)' : 'Discount Percentage (%)'}
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value={discountPercent}
+                onChange={(e) => {
+                  setDiscountPercent(e.target.value);
+                  setDiscountAmount('');
+                }}
+                placeholder="10"
+              />
+
+              <Input
+                label={i18n.language === 'ar' ? 'أو مبلغ الخصم (EGP)' : 'Or Fixed Amount (EGP)'}
+                type="number"
+                step="0.01"
+                min="0"
+                value={discountAmount}
+                onChange={(e) => {
+                  setDiscountAmount(e.target.value);
+                  setDiscountPercent('');
+                }}
+                placeholder="50.00"
+              />
+            </div>
+          )}
+
           <Input
-            label="Reason for Discount"
+            label={i18n.language === 'ar' ? 'سبب الخصم (اختياري)' : 'Discount Reason (Optional)'}
             value={discountReason}
             onChange={(e) => setDiscountReason(e.target.value)}
-            placeholder="e.g. VIP Promo / Manager Courtesy"
+            placeholder={i18n.language === 'ar' ? 'سبب تطبيق الخصم' : 'Reason for discount'}
           />
 
           <div className="flex justify-end space-x-2 gap-2 pt-4 border-t border-[var(--border-color)]">
             <Button variant="outline" size="sm" onClick={() => setIsDiscountModalOpen(false)}>
-              Cancel
+              {i18n.language === 'ar' ? 'إلغاء' : 'Cancel'}
             </Button>
             <Button variant="primary" size="sm" onClick={handleApplyDiscount}>
-              Apply Discount
+              {i18n.language === 'ar' ? 'تطبيق الخصم' : 'Apply Discount'}
             </Button>
           </div>
         </div>
@@ -437,67 +542,40 @@ export const PaymentsPage: React.FC = () => {
         </div>
       </Modal>
 
-      {/* Invoice Receipt Modal */}
+      {/* Printable Egyptian Restaurant Thermal Invoice Receipt Modal */}
       <Modal
         isOpen={isInvoiceModalOpen}
         onClose={() => setIsInvoiceModalOpen(false)}
-        title="Invoice Receipt"
+        title={i18n.language === 'ar' ? 'فاتورة المطعم (80mm)' : 'Restaurant POS Receipt (80mm)'}
       >
         {invoice && (
-          <div className="space-y-4 font-mono text-xs">
-            <div className="text-center border-b border-[var(--border-color)] pb-3">
-              <h2 className="font-bold text-lg tracking-tight text-[var(--fg-color)]">Alaris FlowX</h2>
-              <p className="text-[10px] text-[var(--muted-fg)]">Official Receipt Invoice</p>
-              <p className="text-[10px] text-[var(--muted-fg)]">
-                Date: {formatDateTime(invoice.paidAt, i18n.language)}
-              </p>
+          <div className="space-y-4">
+            {/* Thermal Receipt Preview Box */}
+            <div className="bg-[var(--secondary-bg)] p-4 rounded-xl border border-[var(--border-color)] overflow-y-auto max-h-[70vh]">
+              <PrintableInvoice invoice={invoice} language={i18n.language as 'ar' | 'en'} />
             </div>
 
-            <div className="flex justify-between text-[var(--muted-fg)]">
-              <span>Order #: {invoice.orderId}</span>
-              <span>Table: {invoice.tableNumber}</span>
-            </div>
-            <p className="text-[var(--muted-fg)]">Staff: {invoice.waiterName}</p>
+            {/* Print & Action Controls */}
+            <div className="flex flex-wrap justify-between items-center gap-2 pt-2 border-t border-[var(--border-color)]">
+              <span className="text-[11px] text-[var(--muted-fg)]">
+                {i18n.language === 'ar' ? 'طابعة إيصالات 80 مم جاهزة' : '80mm Thermal Printer Ready'}
+              </span>
 
-            <table className="w-full text-start border-y border-[var(--border-color)] py-2">
-              <thead>
-                <tr className="text-[var(--muted-fg)] text-[10px]">
-                  <th className="text-start">Item</th>
-                  <th className="text-center">Qty</th>
-                  <th className="text-end">Price</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border-color)]/40">
-                {invoice.items.map((i) => (
-                  <tr key={i.id}>
-                    <td className="py-1">{i.menuItemName}</td>
-                    <td className="py-1 text-center">{i.quantity}</td>
-                    <td className="py-1 text-end">{formatCurrency(i.totalPrice, i18n.language)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              <div className="flex items-center space-x-2 gap-2">
+                <Button variant="outline" size="sm" onClick={() => setIsInvoiceModalOpen(false)}>
+                  {i18n.language === 'ar' ? 'إغلاق' : 'Close'}
+                </Button>
 
-            <div className="space-y-1 text-end">
-              <p>Subtotal: {formatCurrency(invoice.subTotal, i18n.language)}</p>
-              {invoice.discountAmount > 0 && (
-                <p className="text-emerald-400">
-                  Discount: -{formatCurrency(invoice.discountAmount, i18n.language)}
-                </p>
-              )}
-              <p className="font-bold text-sm text-[var(--fg-color)]">
-                Total Paid: {formatCurrency(invoice.finalAmount, i18n.language)} ({invoice.paymentMethod})
-              </p>
-            </div>
-
-            <div className="flex justify-end space-x-2 gap-2 pt-4 border-t border-[var(--border-color)]">
-              <Button variant="outline" size="sm" onClick={handlePrint}>
-                <Printer className="w-4 h-4" />
-                <span>Print</span>
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => setIsInvoiceModalOpen(false)}>
-                Close
-              </Button>
+                <Button
+                  variant="brand"
+                  size="sm"
+                  onClick={handlePrint}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white border-0 gap-1.5"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>{i18n.language === 'ar' ? 'طباعة الفاتورة (Print)' : 'Print Receipt'}</span>
+                </Button>
+              </div>
             </div>
           </div>
         )}

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Interfaces;
@@ -46,7 +48,7 @@ public class PaymentServiceTests
     }
 
     [Fact]
-    public async Task ApplyDiscountAsync_ValidOrder_UpdatesFinalAmountAndSavesDiscount()
+    public async Task ApplyDiscountAsync_ValidOrderFixedDiscount_UpdatesFinalAmountAndSavesDiscount()
     {
         var order = new Order
         {
@@ -61,6 +63,7 @@ public class PaymentServiceTests
         var dto = new ApplyDiscountDto { DiscountAmount = 15.00m, Reason = "VIP Guest" };
 
         _mockOrderRepo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(order);
+        _mockOrderRepo.Setup(r => r.Query()).Returns(new List<Order> { order }.AsQueryable());
         _mockEmployeeRepo.Setup(r => r.GetByIdAsync(3)).ReturnsAsync(approver);
 
         bool result = await _service.ApplyDiscountAsync(10, dto, 3);
@@ -70,7 +73,33 @@ public class PaymentServiceTests
         order.FinalAmount.Should().Be(85.00m);
 
         _mockDiscountRepo.Verify(r => r.AddAsync(It.Is<Discount>(d => d.DiscountAmount == 15.00m && d.OrderId == 10)), Times.Once);
-        _mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockUnitOfWork.Verify(u => u.CommitTransactionAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ApplyDiscountAsync_PercentageDiscount_CalculatesCorrectFinalAmount()
+    {
+        var order = new Order
+        {
+            Id = 12,
+            TotalAmount = 500.00m,
+            DiscountAmount = 0,
+            FinalAmount = 500.00m,
+            Status = OrderStatus.Served
+        };
+
+        var approver = new Employee { Id = 3, FullName = "Manager Mark", Role = EmployeeRole.Manager };
+        var dto = new ApplyDiscountDto { DiscountPercent = 10.0m, Reason = "10% Off Promotion" };
+
+        _mockOrderRepo.Setup(r => r.GetByIdAsync(12)).ReturnsAsync(order);
+        _mockOrderRepo.Setup(r => r.Query()).Returns(new List<Order> { order }.AsQueryable());
+        _mockEmployeeRepo.Setup(r => r.GetByIdAsync(3)).ReturnsAsync(approver);
+
+        bool result = await _service.ApplyDiscountAsync(12, dto, 3);
+
+        result.Should().BeTrue();
+        order.DiscountAmount.Should().Be(50.00m);
+        order.FinalAmount.Should().Be(450.00m);
     }
 
     [Fact]
@@ -80,10 +109,28 @@ public class PaymentServiceTests
         var dto = new ApplyDiscountDto { DiscountAmount = 10.00m, Reason = "Test" };
 
         _mockOrderRepo.Setup(r => r.GetByIdAsync(10)).ReturnsAsync(order);
+        _mockOrderRepo.Setup(r => r.Query()).Returns(new List<Order> { order }.AsQueryable());
 
         Func<Task> act = async () => await _service.ApplyDiscountAsync(10, dto, 3);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*completed order*");
+            .WithMessage("*Completed*");
+    }
+
+    [Fact]
+    public async Task ApplyDiscountAsync_DiscountExceedsSubtotal_ThrowsInvalidOperationException()
+    {
+        var order = new Order { Id = 15, TotalAmount = 100.00m, Status = OrderStatus.Served };
+        var approver = new Employee { Id = 3, FullName = "Manager Mark", Role = EmployeeRole.Manager };
+        var dto = new ApplyDiscountDto { DiscountAmount = 150.00m, Reason = "Too high" };
+
+        _mockOrderRepo.Setup(r => r.GetByIdAsync(15)).ReturnsAsync(order);
+        _mockOrderRepo.Setup(r => r.Query()).Returns(new List<Order> { order }.AsQueryable());
+        _mockEmployeeRepo.Setup(r => r.GetByIdAsync(3)).ReturnsAsync(approver);
+
+        Func<Task> act = async () => await _service.ApplyDiscountAsync(15, dto, 3);
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*cannot exceed*");
     }
 }
