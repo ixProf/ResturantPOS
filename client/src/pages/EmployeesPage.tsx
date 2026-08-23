@@ -133,7 +133,7 @@ export const EmployeesPage: React.FC = () => {
           </div>
         </div>
 
-        <Button variant="brand" size="sm" onClick={handleOpenAdd}>
+        <Button variant="brand" size="sm" onClick={handleOpenAdd} className="w-full sm:w-auto justify-center">
           <Plus className="w-4 h-4" />
           <span>{t('employees.addEmployee')}</span>
         </Button>

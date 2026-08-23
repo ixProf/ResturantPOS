@@ -117,25 +117,25 @@ export const ReportsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Bar with Presets & Date Filters */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-[var(--card-bg)] p-5 rounded-2xl border border-[var(--border-color)]">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-[var(--card-bg)] p-4 sm:p-5 rounded-2xl border border-[var(--border-color)]">
         <div className="flex items-center space-x-3 gap-3">
-          <div className="p-3 rounded-xl bg-[#5E6AD2]/10 border border-[#5E6AD2]/30 text-[#5E6AD2]">
-            <BarChart3 className="w-6 h-6" />
+          <div className="p-2.5 sm:p-3 rounded-xl bg-[#5E6AD2]/10 border border-[#5E6AD2]/30 text-[#5E6AD2] shrink-0">
+            <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h2 className="text-lg font-black text-[var(--fg-color)] tracking-tight">Executive Sales Analytics</h2>
+            <h2 className="text-base sm:text-lg font-black text-[var(--fg-color)] tracking-tight">Executive Sales Analytics</h2>
             <p className="text-xs text-[var(--muted-fg)] mt-0.5">
               Real-time revenue metrics from {from} to {to}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full xl:w-auto">
           {/* Preset Buttons */}
-          <div className="flex items-center bg-[var(--secondary-bg)] p-1 rounded-xl border border-[var(--border-color)]">
+          <div className="flex items-center bg-[var(--secondary-bg)] p-1 rounded-xl border border-[var(--border-color)] justify-between sm:justify-start">
             <button
               onClick={() => applyPreset('today')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors text-center ${
                 dateRangePreset === 'today'
                   ? 'bg-[var(--fg-color)] text-[var(--bg-color)]'
                   : 'text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
@@ -145,7 +145,7 @@ export const ReportsPage: React.FC = () => {
             </button>
             <button
               onClick={() => applyPreset('week')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors text-center ${
                 dateRangePreset === 'week'
                   ? 'bg-[var(--fg-color)] text-[var(--bg-color)]'
                   : 'text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
@@ -155,7 +155,7 @@ export const ReportsPage: React.FC = () => {
             </button>
             <button
               onClick={() => applyPreset('month')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-bold transition-colors text-center ${
                 dateRangePreset === 'month'
                   ? 'bg-[var(--fg-color)] text-[var(--bg-color)]'
                   : 'text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
@@ -166,8 +166,8 @@ export const ReportsPage: React.FC = () => {
           </div>
 
           {/* Date Picker Range */}
-          <div className="flex items-center gap-2">
-            <div className="w-36">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex-1 sm:w-36">
               <Input
                 type="date"
                 value={from}
@@ -178,7 +178,7 @@ export const ReportsPage: React.FC = () => {
               />
             </div>
             <span className="text-xs text-[var(--muted-fg)]">to</span>
-            <div className="w-36">
+            <div className="flex-1 sm:w-36">
               <Input
                 type="date"
                 value={to}
@@ -188,19 +188,19 @@ export const ReportsPage: React.FC = () => {
                 }}
               />
             </div>
-            <Button variant="outline" size="sm" onClick={fetchReports}>
+            <Button variant="outline" size="sm" onClick={fetchReports} className="shrink-0">
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
 
           {/* Export Engines Dropdowns */}
-          <div className="flex items-center gap-2 ms-auto xl:ms-0">
+          <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto mt-1 sm:mt-0">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleExport('pdf', 'ar')}
               disabled={isExporting}
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 justify-center"
             >
               <FileText className="w-3.5 h-3.5 text-red-400" />
               <span>PDF (عربي)</span>
@@ -211,7 +211,7 @@ export const ReportsPage: React.FC = () => {
               size="sm"
               onClick={() => handleExport('pdf', 'en')}
               disabled={isExporting}
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 justify-center"
             >
               <FileText className="w-3.5 h-3.5 text-indigo-400" />
               <span>PDF (EN)</span>
@@ -222,7 +222,7 @@ export const ReportsPage: React.FC = () => {
               size="sm"
               onClick={() => handleExport('excel', 'ar')}
               disabled={isExporting}
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 justify-center"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
               <span>Excel (عربي)</span>
@@ -233,7 +233,7 @@ export const ReportsPage: React.FC = () => {
               size="sm"
               onClick={() => handleExport('excel', 'en')}
               disabled={isExporting}
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 justify-center"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
               <span>Excel (EN)</span>
@@ -243,7 +243,7 @@ export const ReportsPage: React.FC = () => {
       </div>
 
       {/* Summary KPI Metrics Cards (7 Cards Grid) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3">
         <Card className="p-3.5 border border-[var(--border-color)]">
           <span className="text-[10px] font-extrabold text-[var(--muted-fg)] uppercase tracking-wider">
             Gross Sales

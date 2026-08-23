@@ -224,16 +224,16 @@ export const KitchenPage: React.FC = () => {
           <p className="text-sm font-medium text-[var(--muted-fg)]">No pending kitchen tickets</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
           {orders.map((order) => (
-            <Card key={order.id} className="flex flex-col justify-between border-2 border-[var(--border-color)]">
-              <CardHeader className="border-b border-[var(--border-color)] pb-3 mb-3">
+            <Card key={order.id} className="flex flex-col justify-between border-2 border-[var(--border-color)] p-3 sm:p-4">
+              <CardHeader className="border-b border-[var(--border-color)] pb-3 mb-3 p-0">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg font-black text-[var(--fg-color)]">
+                    <CardTitle className="text-base sm:text-lg font-black text-[var(--fg-color)]">
                       Table {order.tableNumber}
                     </CardTitle>
-                    <p className="text-xs font-mono text-[var(--muted-fg)]">
+                    <p className="text-[11px] sm:text-xs font-mono text-[var(--muted-fg)]">
                       Ticket #{order.id} • {formatDateTime(order.createdAt, i18n.language)}
                     </p>
                   </div>
@@ -241,19 +241,19 @@ export const KitchenPage: React.FC = () => {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 p-0">
                 <div className="space-y-2">
                   {order.items.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 rounded-lg bg-[var(--secondary-bg)] border border-[var(--border-color)]/60 flex items-center justify-between gap-3 text-xs"
+                      className="p-2.5 sm:p-3 rounded-lg bg-[var(--secondary-bg)] border border-[var(--border-color)]/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
                     >
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-sm text-[var(--fg-color)]">
+                          <span className="font-mono font-bold text-xs sm:text-sm text-[var(--fg-color)]">
                             {item.quantity}x
                           </span>
-                          <span className="font-semibold text-sm text-[var(--fg-color)]">
+                          <span className="font-semibold text-xs sm:text-sm text-[var(--fg-color)] truncate">
                             {item.menuItemName}
                           </span>
                         </div>
@@ -264,15 +264,15 @@ export const KitchenPage: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="flex flex-col items-end gap-1">
+                      <div className="flex items-center justify-between sm:flex-col sm:items-end gap-1 shrink-0">
                         <Badge status={item.status}>{item.status}</Badge>
-                        <div className="flex space-x-1 gap-1 mt-1">
+                        <div className="flex space-x-1 gap-1">
                           {item.status === 'Submitted' && (
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleUpdateItemStatus(order.id, item.id, 'Preparing')}
-                              className="px-2 py-0.5 text-[10px]"
+                              className="px-2.5 py-1 text-xs"
                             >
                               Prepare
                             </Button>
@@ -282,7 +282,7 @@ export const KitchenPage: React.FC = () => {
                               variant="primary"
                               size="sm"
                               onClick={() => handleUpdateItemStatus(order.id, item.id, 'Ready')}
-                              className="px-2 py-0.5 text-[10px]"
+                              className="px-2.5 py-1 text-xs"
                             >
                               Mark Ready
                             </Button>
@@ -299,7 +299,7 @@ export const KitchenPage: React.FC = () => {
                       variant="secondary"
                       size="sm"
                       onClick={() => handleUpdateOrderStatus(order.id, 'Preparing')}
-                      className="w-full"
+                      className="w-full text-xs font-bold py-2"
                     >
                       Start Preparing Ticket
                     </Button>
@@ -309,7 +309,7 @@ export const KitchenPage: React.FC = () => {
                       variant="brand"
                       size="sm"
                       onClick={() => handleUpdateOrderStatus(order.id, 'Ready')}
-                      className="w-full"
+                      className="w-full text-xs font-bold py-2"
                     >
                       Ticket Complete & Ready
                     </Button>

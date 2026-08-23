@@ -313,8 +313,9 @@ export const PaymentsPage: React.FC = () => {
         <h3 className="text-sm font-bold text-[var(--fg-color)] uppercase tracking-wider">
           Recent Completed Payments
         </h3>
-        <Card className="p-0 overflow-hidden">
-          <table className="w-full text-start text-xs">
+        <Card className="p-0 overflow-hidden border border-[var(--border-color)]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-start text-xs">
             <thead className="bg-[var(--sidebar-bg)] border-b border-[var(--border-color)] text-[var(--muted-fg)] font-semibold">
               <tr>
                 <th className="px-4 py-3 text-start">Payment ID</th>
@@ -369,6 +370,7 @@ export const PaymentsPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </Card>
       </div>
 

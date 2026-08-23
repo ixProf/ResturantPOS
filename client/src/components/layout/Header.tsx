@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Sun, Moon, Languages, User, Bell, X, CheckCircle2 } from 'lucide-react';
+import { Sun, Moon, Languages, User, Bell, X, CheckCircle2, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Button } from '../ui/Button';
@@ -11,6 +11,7 @@ import type { OrderDetailsDto } from '../../types/api';
 
 interface HeaderProps {
   title?: string;
+  onToggleMobileMenu?: () => void;
 }
 
 interface ToastNotification {
@@ -20,7 +21,7 @@ interface ToastNotification {
   tableId: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title }) => {
+export const Header: React.FC<HeaderProps> = ({ title, onToggleMobileMenu }) => {
   const { i18n, t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -84,21 +85,34 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
   return (
     <>
-      <header className="h-16 px-6 bg-[var(--card-bg)]/80 backdrop-blur-md border-b border-[var(--border-color)] flex items-center justify-between sticky top-0 z-20 transition-colors">
-        <h2 className="text-base font-semibold text-[var(--fg-color)] tracking-tight">
-          {title || t('app.title')}
-        </h2>
+      <header className="h-16 px-3 sm:px-6 bg-[var(--card-bg)]/80 backdrop-blur-md border-b border-[var(--border-color)] flex items-center justify-between sticky top-0 z-20 transition-colors">
+        <div className="flex items-center space-x-2 gap-2 truncate me-2">
+          {/* Mobile Hamburger Menu Button */}
+          {onToggleMobileMenu && (
+            <button
+              onClick={onToggleMobileMenu}
+              className="md:hidden p-2 text-[var(--muted-fg)] hover:text-[var(--fg-color)] hover:bg-[var(--secondary-bg)] rounded-lg transition-colors"
+              title="Open Navigation"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
+          <h2 className="text-sm sm:text-base font-semibold text-[var(--fg-color)] tracking-tight truncate">
+            {title || t('app.title')}
+          </h2>
+        </div>
 
-        <div className="flex items-center space-x-3 gap-2">
+        <div className="flex items-center space-x-2 sm:space-x-3 gap-1.5 sm:gap-2 shrink-0">
           {/* Language Switcher Button */}
           <Button
             variant="outline"
             size="sm"
             onClick={toggleLanguage}
-            className="px-2.5 py-1 text-xs gap-1.5 font-medium"
+            className="px-2 py-1 text-xs gap-1 font-medium"
           >
             <Languages className="w-3.5 h-3.5" />
-            <span>{i18n.language === 'ar' ? 'English (LTR)' : 'العربية (RTL)'}</span>
+            <span className="hidden xs:inline">{i18n.language === 'ar' ? 'EN' : 'عربي'}</span>
+            <span className="xs:hidden">{i18n.language === 'ar' ? 'EN' : 'ع'}</span>
           </Button>
 
           {/* Dark/Light Theme Toggle */}
@@ -113,11 +127,11 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           </Button>
 
           {/* User Pill */}
-          <div className="flex items-center space-x-2 gap-2 ps-3 border-s border-[var(--border-color)]">
-            <div className="w-8 h-8 rounded-full bg-[var(--secondary-bg)] border border-[var(--glass-border-color)] flex items-center justify-center text-[var(--muted-fg)]">
+          <div className="flex items-center space-x-2 gap-2 ps-2 sm:ps-3 border-s border-[var(--border-color)]">
+            <div className="w-8 h-8 rounded-full bg-[var(--secondary-bg)] border border-[var(--glass-border-color)] flex items-center justify-center text-[var(--muted-fg)] shrink-0">
               <User className="w-4 h-4" />
             </div>
-            <div className="hidden sm:block text-start">
+            <div className="hidden md:block text-start">
               <p className="text-xs font-semibold text-[var(--fg-color)] leading-none">{user?.fullName}</p>
               <p className="text-[10px] text-[var(--muted-fg)] uppercase tracking-wider leading-tight mt-0.5">
                 {user?.role}
@@ -129,20 +143,22 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
       {/* Real-time Ready Order Notification Toast */}
       {readyToast && (
-        <div className="fixed bottom-6 end-6 z-50 p-4 bg-emerald-950/95 border border-emerald-500/60 text-white rounded-2xl shadow-2xl flex items-center space-x-4 gap-4 animate-in fade-in slide-in-from-bottom-5 duration-300">
-          <div className="p-2.5 rounded-xl bg-emerald-800/60 text-emerald-300 border border-emerald-600/40">
-            <Bell className="w-5 h-5 animate-bounce" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 uppercase tracking-wider">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Kitchen Order Ready</span>
+        <div className="fixed inset-x-3 bottom-3 sm:inset-auto sm:bottom-6 sm:end-6 z-50 p-3.5 sm:p-4 bg-emerald-950/95 border border-emerald-500/60 text-white rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2 rounded-xl bg-emerald-800/60 text-emerald-300 border border-emerald-600/40 shrink-0">
+              <Bell className="w-5 h-5 animate-bounce" />
             </div>
-            <p className="text-sm font-extrabold text-white mt-0.5">
-              Order #{readyToast.orderId} (Table #{readyToast.tableNumber}) is ready to be served!
-            </p>
+            <div className="truncate">
+              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>Order Ready</span>
+              </div>
+              <p className="text-xs sm:text-sm font-extrabold text-white truncate mt-0.5">
+                Order #{readyToast.orderId} (Table #{readyToast.tableNumber})
+              </p>
+            </div>
           </div>
-          <div className="flex items-center space-x-2 gap-2 ps-2">
+          <div className="flex items-center space-x-1.5 gap-1.5 shrink-0">
             <Button
               variant="brand"
               size="sm"
@@ -150,9 +166,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 navigate(`/orders?tableId=${readyToast.tableId}`);
                 setReadyToast(null);
               }}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1"
             >
-              View Order
+              View
             </Button>
             <button
               onClick={() => setReadyToast(null)}

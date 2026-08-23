@@ -100,20 +100,20 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[var(--bg-color)] text-[var(--fg-color)] flex flex-col justify-between p-6 transition-colors">
+    <div className="min-h-screen w-full bg-[var(--bg-color)] text-[var(--fg-color)] flex flex-col justify-between p-3 sm:p-6 transition-colors">
       {/* Top Bar Controls */}
       <div className="flex justify-between items-center w-full max-w-6xl mx-auto">
         <div className="flex items-center space-x-3 gap-2">
           <Link to="/" className="flex items-center space-x-3 gap-3 group">
-            <img src={logoImg} alt={t('app.logoAlt')} className="w-9 h-9 object-contain" />
+            <img src={logoImg} alt={t('app.logoAlt')} className="w-8 h-8 sm:w-9 sm:h-9 object-contain" />
             <div>
-              <span className="font-bold text-lg brand-gradient-text tracking-tight">Alaris FlowX</span>
+              <span className="font-bold text-base sm:text-lg brand-gradient-text tracking-tight">Alaris FlowX</span>
             </div>
           </Link>
         </div>
 
         <div className="flex items-center space-x-2 gap-2">
-          <Button variant="outline" size="sm" onClick={toggleLanguage}>
+          <Button variant="outline" size="sm" onClick={toggleLanguage} className="px-2.5 py-1 text-xs">
             <Languages className="w-4 h-4" />
             <span>{i18n.language === 'ar' ? 'English' : 'العربية'}</span>
           </Button>
@@ -128,22 +128,22 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Main Login Card */}
-      <div className="w-full max-w-md mx-auto my-auto py-8">
-        <div className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl p-8 shadow-xl">
-          <div className="text-center mb-8">
+      <div className="w-full max-w-md mx-auto my-auto py-4 sm:py-8">
+        <div className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl p-5 sm:p-8 shadow-xl">
+          <div className="text-center mb-6 sm:mb-8">
             <img
               src={logoImg}
               alt={t('app.logoAlt')}
-              className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 object-contain"
+              className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-3 object-contain"
             />
-            <h1 className="text-2xl font-bold tracking-tight text-[var(--fg-color)]">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--fg-color)]">
               {t('auth.welcome')}
             </h1>
-            <p className="text-xs text-[var(--muted-fg)] mt-2">{t('auth.enterCredentials')}</p>
+            <p className="text-xs text-[var(--muted-fg)] mt-1.5">{t('auth.enterCredentials')}</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-3.5 rounded-lg bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs flex items-center gap-2">
+            <div className="mb-5 p-3 rounded-lg bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -188,11 +188,11 @@ export const LoginPage: React.FC = () => {
           </form>
 
           {/* Quick Demo Credentials Switcher */}
-          <div className="mt-8 pt-6 border-t border-[var(--border-color)] text-center">
+          <div className="mt-6 pt-5 border-t border-[var(--border-color)] text-center">
             <p className="text-xs font-semibold text-[var(--muted-fg)] mb-3 uppercase tracking-wider">
               {t('auth.demoPresets')}
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {(['Manager', 'Waiter', 'Chef', 'Cashier', 'InventoryManager'] as EmployeeRole[]).map(
                 (role) => (
                   <button

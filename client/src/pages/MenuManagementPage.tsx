@@ -261,10 +261,10 @@ export const MenuManagementPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Bar */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-xl border border-[var(--border-color)]">
         <div className="flex items-center space-x-3 gap-3">
-          <div className="p-2.5 rounded-lg bg-[var(--secondary-bg)] border border-[var(--glass-border-color)]">
+          <div className="p-2.5 rounded-lg bg-[var(--secondary-bg)] border border-[var(--glass-border-color)] shrink-0">
             <BookOpen className="w-5 h-5 text-[var(--primary-color)]" />
           </div>
           <div>
@@ -276,8 +276,8 @@ export const MenuManagementPage: React.FC = () => {
         </div>
 
         {canManageMenu && (
-          <div className="flex items-center space-x-2 gap-2">
-            <Button variant="outline" size="sm" onClick={handleOpenAddCategory}>
+          <div className="flex items-center space-x-2 gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" onClick={handleOpenAddCategory} className="flex-1 sm:flex-initial justify-center">
               <Layers className="w-4 h-4" />
               <span>Add Category</span>
             </Button>
@@ -290,6 +290,7 @@ export const MenuManagementPage: React.FC = () => {
                 resetMenuItemForm();
                 setIsMenuItemModalOpen(true);
               }}
+              className="flex-1 sm:flex-initial justify-center"
             >
               <Plus className="w-4 h-4" />
               <span>Add Menu Item</span>
@@ -299,8 +300,8 @@ export const MenuManagementPage: React.FC = () => {
       </div>
 
       {/* Category Pills & CRUD Bar */}
-      <div className="flex flex-wrap items-center gap-2 bg-[var(--card-bg)] p-3 rounded-xl border border-[var(--border-color)]">
-        <span className="text-xs font-semibold text-[var(--muted-fg)] uppercase tracking-wider me-2">
+      <div className="flex items-center gap-2 bg-[var(--card-bg)] p-3 rounded-xl border border-[var(--border-color)] overflow-x-auto pb-1 no-scrollbar">
+        <span className="text-xs font-semibold text-[var(--muted-fg)] uppercase tracking-wider me-2 shrink-0">
           Categories:
         </span>
         {categories.map((cat) => (

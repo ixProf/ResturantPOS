@@ -12,6 +12,7 @@ import {
   Tag,
   Users,
   LogOut,
+  X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import type { EmployeeRole } from '../../types/api';
@@ -25,7 +26,12 @@ interface NavItem {
   roles: EmployeeRole[];
 }
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
 
@@ -90,23 +96,34 @@ export const Sidebar: React.FC = () => {
     (item) => user && item.roles.includes(user.role)
   );
 
-  return (
-    <aside className="w-64 bg-[var(--sidebar-bg)] border-e border-[var(--border-color)] flex flex-col h-screen sticky top-0 z-30 transition-colors">
+  const sidebarContent = (
+    <div className="flex flex-col h-full bg-[var(--sidebar-bg)] border-e border-[var(--border-color)] transition-colors">
       {/* Brand Header with Alaris FlowX Logo */}
-      <div className="px-5 py-4 flex items-center space-x-3 gap-3 border-b border-[var(--border-color)]">
-        <img
-          src={logoImg}
-          alt={t('app.logoAlt')}
-          className="w-8 h-8 object-contain shrink-0"
-        />
-        <div className="truncate">
-          <h1 className="font-bold text-base tracking-tight brand-gradient-text truncate">
-            Alaris FlowX
-          </h1>
-          <p className="text-[10px] uppercase font-semibold text-[var(--muted-fg)] tracking-wider truncate">
-            {t('app.subtitle')}
-          </p>
+      <div className="px-5 py-4 flex items-center justify-between border-b border-[var(--border-color)]">
+        <div className="flex items-center space-x-3 gap-3 truncate">
+          <img
+            src={logoImg}
+            alt={t('app.logoAlt')}
+            className="w-8 h-8 object-contain shrink-0"
+          />
+          <div className="truncate">
+            <h1 className="font-bold text-base tracking-tight brand-gradient-text truncate">
+              Alaris FlowX
+            </h1>
+            <p className="text-[10px] uppercase font-semibold text-[var(--muted-fg)] tracking-wider truncate">
+              {t('app.subtitle')}
+            </p>
+          </div>
         </div>
+        {/* Mobile close button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="md:hidden p-1.5 text-[var(--muted-fg)] hover:text-[var(--fg-color)] hover:bg-[var(--secondary-bg)] rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation List */}
@@ -115,6 +132,7 @@ export const Sidebar: React.FC = () => {
           <NavLink
             key={item.key}
             to={item.path}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 gap-3 ${
                 isActive
@@ -149,6 +167,30 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sticky Sidebar */}
+      <aside className="hidden md:flex w-64 h-screen sticky top-0 z-30 shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Slide-Over Drawer */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+            onClick={onClose}
+          />
+          {/* Drawer content */}
+          <aside className="relative w-72 max-w-[80vw] h-full shadow-2xl z-10 animate-in slide-in-from-start duration-300">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 };

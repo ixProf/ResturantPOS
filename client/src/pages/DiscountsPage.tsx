@@ -166,7 +166,7 @@ export const DiscountsPage: React.FC = () => {
           </div>
         </div>
 
-        <Button variant="brand" size="sm" onClick={handleOpenCreateModal} className="gap-1.5">
+        <Button variant="brand" size="sm" onClick={handleOpenCreateModal} className="gap-1.5 w-full sm:w-auto justify-center">
           <Plus className="w-4 h-4" />
           <span>{isArabic ? 'إضافة خصم جديد' : 'Create Discount'}</span>
         </Button>

@@ -219,11 +219,11 @@ export const TablesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--card-bg)] p-4 rounded-xl border border-[var(--border-color)]">
-        <div className="flex items-center space-x-2 gap-2 flex-wrap">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 bg-[var(--card-bg)] p-3.5 sm:p-4 rounded-xl border border-[var(--border-color)]">
+        <div className="flex items-center space-x-2 gap-2 overflow-x-auto pb-1 no-scrollbar w-full sm:w-auto">
           <button
             onClick={() => setFilterStatus('All')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
               filterStatus === 'All'
                 ? 'bg-[var(--fg-color)] text-[var(--bg-color)]'
                 : 'bg-[var(--secondary-bg)] text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
@@ -237,7 +237,7 @@ export const TablesPage: React.FC = () => {
               <button
                 key={st}
                 onClick={() => setFilterStatus(st)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                   filterStatus === st
                     ? 'bg-[var(--fg-color)] text-[var(--bg-color)]'
                     : 'bg-[var(--secondary-bg)] text-[var(--muted-fg)] hover:text-[var(--fg-color)]'
@@ -249,7 +249,7 @@ export const TablesPage: React.FC = () => {
           })}
         </div>
 
-        <div className="flex items-center space-x-2 gap-2 w-full sm:w-auto">
+        <div className="flex items-center space-x-2 gap-2 w-full sm:w-auto justify-end">
           <Button variant="outline" size="sm" onClick={fetchTables} title="Refresh">
             <RefreshCw className="w-4 h-4" />
           </Button>
@@ -281,7 +281,7 @@ export const TablesPage: React.FC = () => {
           <p className="text-sm font-medium text-[var(--muted-fg)]">No tables found</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
           {tables.map((table) => (
             <Card
               key={table.id}

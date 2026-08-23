@@ -177,8 +177,8 @@ export const InventoryPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => setIsAdjustModalOpen(true)}>
+        <div className="grid grid-cols-1 sm:flex items-center space-x-2 gap-2 w-full sm:w-auto">
+          <Button variant="outline" size="sm" onClick={() => setIsAdjustModalOpen(true)} className="justify-center">
             <ArrowUpDown className="w-4 h-4" />
             <span>Adjust Stock</span>
           </Button>
@@ -190,7 +190,7 @@ export const InventoryPage: React.FC = () => {
               resetPurchaseForm();
               setIsPurchaseModalOpen(true);
             }}
-            className="border-emerald-600/40 text-emerald-400 hover:bg-emerald-950/30"
+            className="border-emerald-600/40 text-emerald-400 hover:bg-emerald-950/30 justify-center"
           >
             <ShoppingBag className="w-4 h-4 text-emerald-400" />
             <span>Record Purchase / Expense</span>
@@ -204,6 +204,7 @@ export const InventoryPage: React.FC = () => {
               resetIngredientForm();
               setIsIngredientModalOpen(true);
             }}
+            className="justify-center"
           >
             <Plus className="w-4 h-4" />
             <span>Add Ingredient</span>
@@ -213,7 +214,7 @@ export const InventoryPage: React.FC = () => {
 
       {/* Low Stock Warning Banner */}
       {lowStockAlerts.length > 0 && (
-        <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-800/40 text-amber-300 text-xs flex items-center justify-between gap-3">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-amber-950/30 border border-amber-800/40 text-amber-300 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400" />
             <div>
@@ -226,7 +227,7 @@ export const InventoryPage: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => setIsAdjustModalOpen(true)}
-            className="border-amber-700/50 text-amber-200 hover:bg-amber-900/40"
+            className="border-amber-700/50 text-amber-200 hover:bg-amber-900/40 w-full sm:w-auto justify-center shrink-0"
           >
             Restock Now
           </Button>

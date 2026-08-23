@@ -42,18 +42,18 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className={`w-full ${maxWidthClasses[maxWidth]} bg-[var(--card-bg)] border border-[var(--glass-border-color)] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]`}
+        className={`w-full max-w-[95vw] ${maxWidthClasses[maxWidth]} bg-[var(--card-bg)] border border-[var(--glass-border-color)] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh] sm:max-h-[90vh]`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-color)]">
-          <h3 className="text-base font-semibold text-[var(--fg-color)]">{title}</h3>
-          <Button variant="ghost" size="sm" onClick={onClose} className="p-1 rounded-md">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--border-color)] shrink-0">
+          <h3 className="text-sm sm:text-base font-semibold text-[var(--fg-color)] truncate pe-2">{title}</h3>
+          <Button variant="ghost" size="sm" onClick={onClose} className="p-1.5 rounded-md shrink-0">
             <X className="w-4 h-4" />
           </Button>
         </div>
-        <div className="p-5 overflow-y-auto">{children}</div>
+        <div className="p-4 sm:p-5 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );
